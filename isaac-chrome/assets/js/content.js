@@ -65,6 +65,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const handlePageChange = getPageChangeHandler(data, () => index, value => { index = value })
     const observer = new MutationObserver(handlePageChange)
     observer.observe(formContainer, { attributes: true, childList: true, subtree: true })
+
+    handlePageChange()
 })
 
 function getPageChangeHandler (data, getIndex, setIndex) {
