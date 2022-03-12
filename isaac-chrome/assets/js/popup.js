@@ -11,10 +11,6 @@ searchForm.onsubmit = function (event) {
     })
 }
 
-// form: #aq-main-form
-// text fields: .aq-input
-// radio buttons: input[type="radio"]
-
 function fillForm (data) {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
         chrome.scripting.executeScript({
