@@ -19,7 +19,7 @@ function fillForm (data) {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ['content.js']
+            files: ['assets/js/content.js']
         }, function () {
             chrome.tabs.sendMessage(tab.id, JSON.stringify(data))
         })
