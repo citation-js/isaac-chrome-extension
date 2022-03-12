@@ -17,7 +17,10 @@ searchForm.onsubmit = function (event) {
 
 function fillForm (data) {
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-        chrome.tabs.executeScript(tab.id, { file: 'content.js' }, function () {
+        chrome.scripting.executeScript({
+            target: tab.id,
+            files: ['content.js']
+        }, function () {
             chrome.tabs.sendMessage(tab.id, JSON.stringify(data))
         })
     })
