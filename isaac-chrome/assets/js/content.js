@@ -1,3 +1,5 @@
+(function () {
+
 const fieldMap = {
     Titel: data => data.title,
     // Subtitel: data => {},
@@ -130,3 +132,5 @@ function processAuthor (data, index) {
         }
     }
 }
+
+})()
