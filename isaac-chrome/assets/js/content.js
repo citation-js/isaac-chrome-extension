@@ -26,8 +26,71 @@ const authorFieldMap = {
     // Geboortedatum: data => {},
 }
 
+const pages = {
+    type: 'Product_Keuze_1',
+    work: 'Product_1',
+    author: 'ProductBetrokkenheid_1'
+}
+
+const typeMap = {
+    'article-journal': 'WetenschapelijkArtikel',
+    book: 'Boek',
+    chapter: 'HoofdstukinBoek',
+    thesis: 'Proefschrift',
+    'paper-conference': 'Conference_Paper',
+    article: 'ProfessionelePublicatie',
+    report: 'ProfessionelePublicatie',
+    'article-newspaper': 'PublicatiekPubliek',
+    'article-magazine': 'PublicatiekPubliek',
+    patent: 'Octrooi'
+}
+
+function identifyPage () {
+    for (const page in pages) {
+        if (document.getElementById(pages[page])) {
+            return page
+        }
+    }
+}
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const data = JSON.parse(message)
+    sendResponse(true)
+
+    let index = 0
+
+    const formContainer = document.getElementById('aq-main-form').parentNode
+    const handlePageChange = getPageChangeHandler(data, () => index, value => { index = value })
+    const observer = new MutationObserver(handlePageChange)
+    observer.observe(formContainer, { attributes: true, childList: true, subtree: true })
+})
+
+function getPageChangeHandler (data, getIndex, setIndex) {
+    return function () {
+        console.log(identifyPage(), getIndex())
+        switch (identifyPage()) {
+            case 'type':
+                processType(data)
+                break
+
+            case 'work':
+                processWork(data)
+                break
+
+            case 'author':
+                processAuthor(data, getIndex())
+                setIndex(getIndex() + 1)
+                break
+        }
+    }
+}
+
+function processType (data) {
+    const type = typeMap[data.type] || 'OverigeOutput'
+    document.getElementById(type + '_1').click()
+}
+
+function processWork (data) {
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
     for (const input of inputs) {
         const name = input.getAttribute('name')
@@ -47,8 +110,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             }
         } catch (e) {}
     }
+}
 
-    const authorButton = document.getElementById('Toevoegen_1')
+function processAuthor (data, index) {
+    // #Toevoegen_1
     if (data.author) {
         for (const author of data.author) {
             authorButton.click()
@@ -60,10 +125,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                     input.value = authorFieldMap[field](author)
                 } catch (e) {}
             }
-            const button = document.getElementById('Verder_2')
-            button.click()
+            // const button = document.getElementById('Verder_2')
+            // button.click()
         }
     }
-
-    return true
-})
+}
