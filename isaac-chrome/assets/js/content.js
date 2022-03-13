@@ -29,9 +29,10 @@ const authorFieldMap = {
 }
 
 const pages = {
-    type: 'Product_Keuze_1',
-    work: 'Product_1',
-    author: 'ProductBetrokkenheid_1'
+    start: 'Project_ProductOverzicht',
+    type: 'Product_Keuze',
+    work: 'Product',
+    author: 'ProductBetrokkenheid'
 }
 
 const typeMap = {
@@ -49,7 +50,7 @@ const typeMap = {
 
 function identifyPage () {
     for (const page in pages) {
-        if (document.getElementById(pages[page])) {
+        if (document.querySelector('div#' + pages[page] + '_1')) {
             return page
         }
     }
@@ -62,14 +63,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     let index = 0
 
     const formContainer = document.getElementById('aq-main-form').parentNode
-    const handlePageChange = getPageChangeHandler(data, () => index, value => { index = value })
+    const handlePageChange = getPageChangeHandler(observer, data, () => index, value => { index = value })
     const observer = new MutationObserver(handlePageChange)
     observer.observe(formContainer, { attributes: true, childList: true, subtree: false })
 
     handlePageChange()
 })
 
-function getPageChangeHandler (data, getIndex, setIndex) {
+function getPageChangeHandler (observer, data, getIndex, setIndex) {
     return function () {
         console.log(identifyPage(), getIndex())
         switch (identifyPage()) {
@@ -84,6 +85,10 @@ function getPageChangeHandler (data, getIndex, setIndex) {
             case 'author':
                 processAuthor(data, getIndex())
                 setIndex(getIndex() + 1)
+                break
+
+            case 'start':
+                observer.disconnect()
                 break
         }
     }
