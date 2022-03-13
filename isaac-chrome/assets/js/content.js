@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const formContainer = document.getElementById('aq-main-form').parentNode
     const handlePageChange = getPageChangeHandler(data, () => index, value => { index = value })
     const observer = new MutationObserver(handlePageChange)
-    observer.observe(formContainer, { attributes: true, childList: true, subtree: true })
+    observer.observe(formContainer, { attributes: true, childList: true, subtree: false })
 
     handlePageChange()
 })
@@ -95,6 +95,10 @@ function processType (data) {
 }
 
 function processWork (data) {
+    if (document.querySelector('#aq-main-form .aq-input').value) {
+        return
+    }
+
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
     for (const input of inputs) {
         const name = input.getAttribute('name')
@@ -114,25 +118,27 @@ function processWork (data) {
             }
         } catch (e) {}
     }
+
+    document.getElementById('Toevoegen_1').click()
 }
 
 function processAuthor (data, index) {
-    // #Toevoegen_1
-    if (data.author) {
-        for (const author of data.author) {
-            authorButton.click()
-            const inputs = document.querySelector('#aq-main-form .aq-input')
-            for (const input of inputs) {
-                const name = input.getAttribute('name')
-                const field = name.split('-')[1].split('_')[0]
-                try {
-                    input.value = authorFieldMap[field](author)
-                } catch (e) {}
-            }
-            // const button = document.getElementById('Verder_2')
-            // button.click()
-        }
+    if (!data.author || data.author[index] || document.querySelector('#aq-main-form .aq-input').value) {
+        return
     }
+
+    const author = data.author[index]
+    const inputs = document.querySelector('#aq-main-form .aq-input')
+    for (const input of inputs) {
+        const name = input.getAttribute('name')
+        const field = name.split('-')[1].split('_')[0]
+        try {
+            input.value = authorFieldMap[field](author)
+        } catch (e) {}
+    }
+
+    // const button = document.getElementById('Verder_2')
+    // button.click()
 }
 
 })()
