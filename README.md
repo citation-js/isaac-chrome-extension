@@ -1,4 +1,4 @@
-# isaac-chrome-extension
+# <img src="assets/icon.svg" width="48" alt="Icon: Black serif font I on a background of four colored squares: brown, gold, green and platinum" /> isaac-chrome-extension
 
 Chrome Web Extension for support of the [NWO ISAAC platform](https://www.nwo.nl/aanvraagsysteem-isaac). **This extension is not endorsed or developed by the NWO.**
 
