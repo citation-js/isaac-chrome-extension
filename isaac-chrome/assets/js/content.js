@@ -63,15 +63,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     let index = 0
 
     const formContainer = document.getElementById('aq-main-form').parentNode
-    const handlePageChange = getPageChangeHandler(observer, data, () => index, value => { index = value })
+    const handlePageChange = getPageChangeHandler(data, () => index, value => { index = value })
     const observer = new MutationObserver(handlePageChange)
     observer.observe(formContainer, { attributes: true, childList: true, subtree: false })
 
     handlePageChange()
 })
 
-function getPageChangeHandler (observer, data, getIndex, setIndex) {
-    return function () {
+function getPageChangeHandler (data, getIndex, setIndex) {
+    return function (changes, observer) {
         console.log(identifyPage(), getIndex())
         switch (identifyPage()) {
             case 'type':
