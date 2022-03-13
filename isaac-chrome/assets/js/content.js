@@ -130,9 +130,9 @@ function processAuthor (data, index) {
     }
 
     const author = data.author[index]
-    console.log(author)
-    const inputs = document.querySelector('#aq-main-form .aq-input')
-    debugger
+    // console.log(author)
+    const inputs = document.querySelectorAll('#aq-main-form .aq-input')
+    // debugger
     for (const input of inputs) {
         const name = input.getAttribute('name')
         const field = name.split('-')[1].split('_')[0]
