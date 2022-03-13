@@ -20,11 +20,11 @@ const radioMap = {
 const authorFieldMap = {
     Volgnummer: (data, i) => i + 1,
     // DAI: data => {},
-    Titulatuur: data => data['dropping-particle'],
-    Voornaam: data => data['given'].includes('.') ? undefined : data['given'],
-    Voorletters: data => data['given'].includes('.') ? data['given'] : data['given'].replace(/([^\W])[^\w]+/g, '$1.'),
-    Voorvoegsel: data => data['non-dropping-particle'],
-    Achternaam: data => data['family'],
+    Titulatuur: data => data['dropping-particle'] || '',
+    Voornaam: data => data['given'].includes('.') ? '' : data['given'] || '',
+    Voorletters: data => data['given'].includes('.') ? data['given'] : data['given'].replace(/([^\W])[^\W]+/g, '$1.'),
+    Voorvoegsel: data => data['non-dropping-particle'] || '',
+    Achternaam: data => data['family'] || '',
     // Geboortedatum: data => {},
 }
 
@@ -72,14 +72,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 function getPageChangeHandler (data, getIndex, setIndex) {
     return function (changes, observer) {
-        console.log(identifyPage(), getIndex())
+        // console.log(identifyPage(), getIndex())
         switch (identifyPage()) {
             case 'type':
                 processType(data)
                 break
 
             case 'work':
-                processWork(data)
+                processWork(data, getIndex())
                 break
 
             case 'author':
@@ -99,12 +99,15 @@ function processType (data) {
     document.getElementById(type + '_1').click()
 }
 
-function processWork (data) {
+function processWork (data, index) {
     if (document.querySelector('#aq-main-form .aq-input').value) {
+        if (data.author[index]) {
+            document.getElementById('Toevoegen_1').click()
+        }
         return
     }
 
-    console.log(data)
+    // console.log(data)
 
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
     for (const input of inputs) {
@@ -142,7 +145,7 @@ function processAuthor (data, index) {
         const name = input.getAttribute('name')
         const field = name.split('-')[1].split('_')[0]
         try {
-            input.value = authorFieldMap[field](author)
+            input.value = authorFieldMap[field](author, index)
         } catch (e) {}
     }
 
