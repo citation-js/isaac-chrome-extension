@@ -9,7 +9,7 @@ const fieldMap = {
     Nummer: data => data.issue ? data.volume + '(' + data.issue + ')' : data.volume,
     Beginpagina: data => data.page.split('-')[0] || data.page,
     Eindpagina: data => data.page.split('-')[1] || data.page,
-    OpenAccessUrl: data => data.DOI ? 'https://doi.org/' + data.DOI : data.URL,
+    OpenAccesUrl: data => data.DOI ? 'https://doi.org/' + data.DOI : data.URL, // sic
     // UrlTijdschrijft: data => {}, // sic
 }
 
@@ -99,6 +99,8 @@ function processWork (data) {
         return
     }
 
+    console.log(data)
+
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
     for (const input of inputs) {
         const name = input.getAttribute('name')
@@ -128,6 +130,7 @@ function processAuthor (data, index) {
     }
 
     const author = data.author[index]
+    console.log(author)
     const inputs = document.querySelector('#aq-main-form .aq-input')
     for (const input of inputs) {
         const name = input.getAttribute('name')
