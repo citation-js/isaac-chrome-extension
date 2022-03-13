@@ -9,6 +9,9 @@ Chrome Web Extension for support of the [NWO ISAAC platform](https://www.nwo.nl/
   1. Click "Projects", select your project and go to the "Product" tab. There, click "Add".
   2. Select the type of product. The extension can do this automatically, but this process is fallible.
   3. Click the icon of the extension in the top right.
+
+![Screenshot of the popup of the extension over the ISAAC forms](assets/screenshot.png)
+
   4. Fill in your DOI, PubMed identifer, or ISBN and click "Search". This takes you to the information of the first author.
   5. Review the author information, optionally add additional info such as the gender and DAI, and click "Next". Repeat until all authors are added.
   6. Review the product information, optionally add additional info such as Open Access status.
