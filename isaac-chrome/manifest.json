@@ -3,6 +3,13 @@
   "description": "A browser extension to add literature using DOIs and PubMed identifiers.",
   "version": "1.0",
   "manifest_version": 3,
+  "icons": {
+    "16": "assets/img/icon-16.png",
+    "32": "assets/img/icon-32.png",
+    "48": "assets/img/icon-48.png",
+    "64": "assets/img/icon-64.png",
+    "128": "assets/img/icon-128.png"
+  },
   "action": {
     "default_popup": "popup.html"
   },
