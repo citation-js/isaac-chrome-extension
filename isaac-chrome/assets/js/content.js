@@ -113,7 +113,7 @@ function processWork (data) {
     const radios = document.querySelectorAll('#aq-main-form input[type="radio"]')
     for (const radio of radios) {
         const name = radio.getAttribute('id')
-        const [field, value] = name.split('-')[1].split(/_\d/)[0]
+        const [field, value] = name.split('-')[1].split(/_\d/)
         try {
             if (value === radioMap[field](data).toString()) {
                  radio.checked = true
@@ -125,7 +125,7 @@ function processWork (data) {
 }
 
 function processAuthor (data, index) {
-    if (!data.author || data.author[index] || document.querySelector('#aq-main-form .aq-input').value) {
+    if (!data.author || !data.author[index] || document.querySelector('#aq-main-form .aq-input').value) {
         return
     }
 
