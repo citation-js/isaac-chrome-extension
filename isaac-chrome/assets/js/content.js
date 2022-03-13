@@ -4,6 +4,7 @@ const fieldMap = {
     Titel: data => data.title,
     // Subtitel: data => {},
     TitelTijdschrift: data => data['container-title'],
+    GepubliceerdIn: data => data['container-title'],
     ISSN: data => data.ISSN,
     UitgaveJaar: data => data.issued['date-parts'][0][0],
     Nummer: data => data.issue ? data.volume + '(' + data.issue + ')' : data.volume,
@@ -72,7 +73,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 function getPageChangeHandler (data, getIndex, setIndex) {
     return function (changes, observer) {
-        // console.log(identifyPage(), getIndex())
         switch (identifyPage()) {
             case 'type':
                 processType(data)
@@ -107,8 +107,6 @@ function processWork (data, index) {
         return
     }
 
-    // console.log(data)
-
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
     for (const input of inputs) {
         const name = input.getAttribute('name')
@@ -138,9 +136,7 @@ function processAuthor (data, index) {
     }
 
     const author = data.author[index]
-    // console.log(author)
     const inputs = document.querySelectorAll('#aq-main-form .aq-input')
-    // debugger
     for (const input of inputs) {
         const name = input.getAttribute('name')
         const field = name.split('-')[1].split('_')[0]

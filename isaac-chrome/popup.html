@@ -1,6 +1,6 @@
 <html>
   <head>
-    <!-- link rel="stylesheet" href="assets/css/popup.css" -->
+    <link rel="stylesheet" href="assets/css/popup.css" />
   </head>
   <body>
    <div id="isaac-wrapper">
@@ -9,8 +9,17 @@
     </div>
     <form id="isaac-form">
       <fieldset>
-        <label for="text">DOI</label>
-        <input name="doi" type="text" id="isaac-doi" placeholder="10.xxx/yyy" />
+        <label for="isaac-type">Identifier type</label>
+        <select id="isaac-type" name="type">
+          <option value="@doi/id">DOI</option>
+          <option value="@pubmed/id">PubMed</option>
+          <option value="@isbn/isbn-13">ISBN-10</option>
+          <option value="@isbn/isbn-13">ISBN-13</option>
+        </select>
+      </fieldset>
+      <fieldset>
+        <label for="isaac-id">Identifier</label>
+        <input name="id" type="text" id="isaac-id" placeholder="10.xxx/yyy" />
       </fieldset>
       <button class="button primary" id="isaac-button">
           Search

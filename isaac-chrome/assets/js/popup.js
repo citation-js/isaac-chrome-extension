@@ -5,8 +5,9 @@ const searchForm = document.getElementById('isaac-form')
 searchForm.onsubmit = function (event) {
     event.preventDefault()
     const formData = new FormData(searchForm)
-    const identifier = formData.get('doi')
-    cjs.Cite.async(identifier, function (cite) {
+    const forceType = formData.get('type')
+    const identifier = formData.get('id')
+    cjs.Cite.async(identifier, { forceType }, function (cite) {
         fillForm(cite.format('data', { type: 'object' })[0])
     })
 }

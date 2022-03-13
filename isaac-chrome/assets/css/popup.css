@@ -1,0 +1,17 @@
+body {
+    font-family: sans-serif;
+}
+
+button {
+    display: block;
+    background-color: #2962FF;
+    border: 0;
+    color: white;
+    padding: 0.5em 1em;
+    font-weight: bold;
+    margin: 0 auto;
+}
+
+fieldset {
+    border: 0;
+}
