@@ -22,3 +22,10 @@ See also the ISAAC manual ([Dutch](https://www.isaac.nwo.nl/documents/1009078/10
 ## Dependencies
 
 This code uses [Citation.js](https://citation.js.org), license MIT.
+
+## Installing from GitHub
+
+  1. Make a check out of this source code repository
+  2. Open Chrome and type `chrome://extensions/` (or `brave://` or `chromium://` or `edge://`) in the browser location bar
+  3. Enable `Developer mode` in the top right of this page
+  4. Click `Load unpacked` and open the `isaac-chrome` folder in the source code repo with the `manifest.json` file
