@@ -8,6 +8,8 @@ Chrome Web Extension for support of the [NWO ISAAC platform](https://www.nwo.nl/
 
 ## Install
 
+### Installing from the Chrome Web Store
+
 The extension is [available in the Chrome Web Store](https://chrome.google.com/webstore/detail/isaac-chrome-extension/kiljfbiapahlahhilgcgfkfjnkgggode).
 
 ### Installing from GitHub
