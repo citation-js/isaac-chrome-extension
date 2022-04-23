@@ -8,7 +8,20 @@ searchForm.onsubmit = function (event) {
     const forceType = formData.get('type')
     const identifier = formData.get('id')
     cjs.Cite.async(identifier, { forceType }, function (cite) {
-        fillForm(cite.format('data', { type: 'object' })[0])
+        const data = cite.format('data', { type: 'object' })[0]
+        if (data.DOI) {
+            cjs.util
+                .fetchFileAsync('https://api.unpaywall.org/v2/' + data.DOI + '?email=citationjs@protonmail.com')
+                .then(response => {
+                    response = JSON.parse(response)
+                    if (!data.custom) { data.custom = {} }
+                    data.custom.is_oa = response.is_oa
+                    data.custom.oa_status = response.oa_status
+                    fillForm(data)
+                })
+        } else {
+            fillForm(data)
+        }
     })
 }
 

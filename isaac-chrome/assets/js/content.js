@@ -10,12 +10,14 @@ const fieldMap = {
     Nummer: data => data.issue ? data.volume + '(' + data.issue + ')' : data.volume,
     Beginpagina: data => data.page.split('-')[0] || data.page,
     Eindpagina: data => data.page.split('-')[1] || data.page,
-    OpenAccesUrl: data => data.DOI ? 'https://doi.org/' + data.DOI : data.URL, // sic
+    OpenAccesUrl: /* sic */ data => data.DOI ? 'https://doi.org/' + data.DOI : data.URL,
     // UrlTijdschrijft: data => {}, // sic
 }
 
 const radioMap = {
-    Gerefereerd: data => 1
+    Gerefereerd: data => 1,
+    OpenAccess: data => data.custom && (data.custom.is_oa === false ? 2 : 1),
+    OpenAccesKenmerk: /* sic */ data => data.custom && openAccessMap[data.custom.oa_status]
 }
 
 const authorFieldMap = {
@@ -47,6 +49,13 @@ const typeMap = {
     'article-newspaper': 'PublicatiekPubliek',
     'article-magazine': 'PublicatiekPubliek',
     patent: 'Octrooi'
+}
+
+const openAccessMap = {
+    green: 1,
+    gold: 2,
+    hybrid: 4
+    // bronze: not supported
 }
 
 function identifyPage () {
