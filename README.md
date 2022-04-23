@@ -1,6 +1,6 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6350383.svg)](https://doi.org/10.5281/zenodo.6350383)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6350382.svg)](https://doi.org/10.5281/zenodo.6350382)
 
-# <img src="assets/icon.svg" width="48" alt="Icon: Black serif font I on a background of four colored squares: brown, gold, green and platinum" /> isaac-chrome-extension
+# <img src="assets/icon.svg" width="48" alt="Icon: Black serif font 'I' on a background of four colored squares: brown, gold, green and platinum" /> isaac-chrome-extension
 
 Chrome Web Extension for support of the [NWO ISAAC platform](https://www.nwo.nl/aanvraagsysteem-isaac). **This extension is not endorsed or developed by the NWO.**
 
@@ -17,14 +17,14 @@ The extension is [available in the Chrome Web Store](https://chrome.google.com/w
 To install the latest release:
 
   1. Go to the [latest release](https://github.com/citation-js/isaac-chrome-extension/releases) and download the zip file (e.g. `isaac-chrome-extension-1.0.0.zip`)
-  2. Open Chrome and type `chrome://extensions/` (or `brave://` or `chromium://` or `edge://`) in the browser location bar
+  2. Open Chrome and type `chrome://extensions/` (or `brave://extensions/` or `chromium://extensions/` or `edge://extensions/`) in the browser location bar
   3. Enable `Developer mode` in the top right of this page
   4. Drag the zip file to the extensions tab
 
 To install the development version:
 
   1. Make a check out of this source code repository
-  2. Open Chrome and type `chrome://extensions/` (or `brave://` or `chromium://` or `edge://`) in the browser location bar
+  2. Open Chrome and type `chrome://extensions/` (or `brave://extensions/` or `chromium://extensions/` or `edge://extensions/`) in the browser location bar
   3. Enable `Developer mode` in the top right of this page
   4. Click `Load unpacked` and open the `isaac-chrome` folder in the source code repo with the `manifest.json` file
 
@@ -41,7 +41,7 @@ To install the development version:
   6. Review the product information, optionally add additional info such as Open Access status.
   7. Submit.
 
-See also the ISAAC manual ([Dutch](https://www.isaac.nwo.nl/documents/1009078/1009634/ISAAC_Handleiding_NL.pdf/1f6da38b-7268-4fc4-8a0b-5097476a15d5), [English](https://www.nwo.nl/sites/nwo/files/media-files/ISAAC_User_manual_EN.pdf)).
+See also the ISAAC manual ([Dutch](https://www.nwo.nl/sites/nwo/files/media-files/ISAAC_Handleiding_NL.pdf), [English](https://www.nwo.nl/sites/nwo/files/media-files/ISAAC_User_manual_EN.pdf)).
 
 ## Dependencies
 
