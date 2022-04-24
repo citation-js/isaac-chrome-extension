@@ -9,6 +9,12 @@ searchForm.onsubmit = function (event) {
     const identifier = formData.get('id')
     cjs.Cite.async(identifier, { forceType }, function (cite) {
         const data = cite.format('data', { type: 'object' })[0]
+
+        if (data.type === 'book' && !data.author && data.editor) {
+            data.author = data.editor
+            delete data.editor
+        }
+
         if (data.DOI) {
             cjs.util
                 .fetchFileAsync('https://api.unpaywall.org/v2/' + data.DOI + '?email=citationjs@protonmail.com')

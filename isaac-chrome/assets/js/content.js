@@ -3,7 +3,7 @@
 const fieldMap = {
     Aanvraagnummer: data => data.number,
     Beginpagina: data => data.page.split('-')[0] || data.page,
-    Druk: data => data.edition,
+    Druk: data => data.edition || 1,
     Eindpagina: data => data.page.split('-')[1] || data.page,
     GepubliceerdIn: data => data['container-title'],
     ISBN: data => data.ISBN,
@@ -17,6 +17,7 @@ const fieldMap = {
     Prioriteitsdatum: data => data.issued['date-parts'][0][0],
     // Subtitel: data => {},
     Titel: data => data.title,
+    TitelBoek: data => data['container-title'],
     TitelTijdschrift: data => data['container-title'],
     UitgaveJaar: data => data.issued['date-parts'][0][0],
     Uitgavejaar: data => data.issued['date-parts'][0][0],
@@ -121,7 +122,7 @@ function processType (data) {
 
 function processWork (data, index) {
     if (document.querySelector('#aq-main-form .aq-input').value) {
-        if (data.author[index]) {
+        if (data.author && data.author[index]) {
             document.getElementById('Toevoegen_1').click()
         }
         return
@@ -132,7 +133,10 @@ function processWork (data, index) {
         const name = input.getAttribute('name')
         const field = name.split('-')[1].split('_')[0]
         try {
-            input.value = fieldMap[field](data)
+            const value = fieldMap[field](data)
+            if (value !== undefined) {
+                input.value = value
+            }
         } catch (e) {}
     }
 
@@ -147,11 +151,13 @@ function processWork (data, index) {
         } catch (e) {}
     }
 
-    document.getElementById('Toevoegen_1').click()
+    if (data.author && data.author[index]) {
+        document.getElementById('Toevoegen_1').click()
+    }
 }
 
 function processAuthor (data, index) {
-    if (!data.author || !data.author[index] || document.querySelector('#aq-main-form .aq-input').value) {
+    if ( document.querySelector('#aq-main-form .aq-input').value) {
         return
     }
 
