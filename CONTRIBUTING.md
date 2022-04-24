@@ -16,7 +16,7 @@
 git add CITATION.cff LICENSE isaac-chrome/manifest.json
 git commit -m "Release v$NEWVERSION"
 git tag "v$NEWVERSION"
-git push origin --push-tags
+git push origin --tags
 # Make release from tag in GitHub (manually)
 zip -r isaac-chrome-extension-$NEWVERSION.zip isaac-chrome
 # Upload to Chrome webstore (manually)
