@@ -45,4 +45,5 @@ See also the ISAAC manual ([Dutch](https://www.nwo.nl/sites/nwo/files/media-file
 
 ## Dependencies
 
-This code uses [Citation.js](https://citation.js.org), license MIT.
+This code uses [Citation.js](https://citation.js.org), license MIT. Information is collected from Crossref, DataCite,
+and mEDRA (DOI), Google Books and OpenLibrary (ISBN), PubMed (PubMed identifiers) and Unpaywall (OA status).
