@@ -1,17 +1,28 @@
 (function () {
 
 const fieldMap = {
-    Titel: data => data.title,
-    // Subtitel: data => {},
-    TitelTijdschrift: data => data['container-title'],
-    GepubliceerdIn: data => data['container-title'],
-    ISSN: data => data.ISSN,
-    UitgaveJaar: data => data.issued['date-parts'][0][0],
-    Nummer: data => data.issue ? data.volume + '(' + data.issue + ')' : data.volume,
+    Aanvraagnummer: data => data.number,
     Beginpagina: data => data.page.split('-')[0] || data.page,
+    Druk: data => data.edition,
     Eindpagina: data => data.page.split('-')[1] || data.page,
+    GepubliceerdIn: data => data['container-title'],
+    ISBN: data => data.ISBN,
+    ISSN: data => data.ISSN,
+    Medium: data => data.medium,
+    NaamUitgeverij: data => data.publisher,
+    Nummer: data => data.issue ? data.volume + '(' + data.issue + ')' : data.volume,
     OpenAccesUrl: /* sic */ data => data.DOI ? 'https://doi.org/' + data.DOI : data.URL,
-    // UrlTijdschrijft: data => {}, // sic
+    PaginaAantal: data => data['number-of-pages'],
+    PlaatsnaamUitgeverij: data => data['publisher-place'],
+    Prioriteitsdatum: data => data.issued['date-parts'][0][0],
+    // Subtitel: data => {},
+    Titel: data => data.title,
+    TitelTijdschrift: data => data['container-title'],
+    UitgaveJaar: data => data.issued['date-parts'][0][0],
+    Uitgavejaar: data => data.issued['date-parts'][0][0],
+    // UrlTijdschrijft: /* sic */ data => {},
+    // UrlUitgeverij: data => {},
+    // urlUitgeverij: /* sic */ data => {},
 }
 
 const radioMap = {
