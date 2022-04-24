@@ -4,6 +4,8 @@
 
 Chrome Web Extension for support of the [NWO ISAAC platform](https://www.nwo.nl/aanvraagsysteem-isaac). **This extension is not endorsed or developed by the NWO.**
 
+> # ⚠️ Alpha version. Not tested for patents, contracts or publications aimed at the general public
+
 ## Install
 
 ### Installing from the Chrome Web Store
