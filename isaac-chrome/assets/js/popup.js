@@ -4,10 +4,15 @@ document.getElementById('isaac-citation-js-version').innerHTML = 'Running <a hre
 const searchForm = document.getElementById('isaac-form')
 searchForm.onsubmit = function (event) {
     event.preventDefault()
+    const errorMessage = searchForm.querySelector('output')
+    if (errorMessage) {
+        errorMessage.remove()
+    }
+
     const formData = new FormData(searchForm)
     const forceType = formData.get('type')
     const identifier = formData.get('id')
-    cjs.Cite.async(identifier, { forceType }, function (cite) {
+    cjs.Cite.async(identifier, { forceType }).then(function (cite) {
         const data = cite.format('data', { type: 'object' })[0]
 
         if (data.type === 'book' && !data.author && data.editor) {
@@ -23,11 +28,18 @@ searchForm.onsubmit = function (event) {
                     if (!data.custom) { data.custom = {} }
                     data.custom.is_oa = response.is_oa
                     data.custom.oa_status = response.oa_status
+                })
+                .finally(() => {
                     fillForm(data)
                 })
         } else {
             fillForm(data)
         }
+    }).catch(function (error) {
+        const message = document.createElement('output')
+        message.setAttribute('style', 'color: red;')
+        message.textContent = error.message
+        searchForm.appendChild(message)
     })
 }
 
