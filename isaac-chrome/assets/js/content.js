@@ -116,7 +116,7 @@ function getPageChangeHandler (data, getIndex, setIndex) {
 }
 
 function processType (data) {
-    const type = typeMap[data.type] || 'OverigeOutput'
+    const type = typeMap[data.type] || 'OverigeOuput'
     document.getElementById(type + '_1').click()
 }
 
