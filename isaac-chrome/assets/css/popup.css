@@ -16,6 +16,7 @@ fieldset {
     border: 0;
 }
 
-ouptut {
+output {
+    margin-top: 0.5em;
     display: block;
 }

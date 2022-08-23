@@ -44,7 +44,11 @@ searchForm.onsubmit = function (event) {
 
 function displayMessage (text, error) {
     const message = document.createElement('output')
-    if (error) { message.setAttribute('style', 'color: red;') }
+    if (error) {
+        message.setAttribute('style', 'color: red;')
+    } else {
+        message.setAttribute('style', 'color: grey;')
+    }
     message.textContent = text
     searchForm.appendChild(message)
 }
