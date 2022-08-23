@@ -70,9 +70,17 @@ const openAccessMap = {
     // bronze: not supported
 }
 
+function getElementById (id) {
+    const candidates = document.querySelectorAll('[id$=' + id + ']')
+    return Array.from(candidates).find(candidate => {
+        const prefix = candidate.id.slice(0, -id.length)
+        return /^P\d+_$/.test(prefix)
+    })
+}
+
 function identifyPage () {
     for (const page in pages) {
-        if (document.querySelector('div#' + pages[page] + '_1')) {
+        if (getElementById(pages[page] + '_1')) {
             return page
         }
     }
@@ -117,13 +125,13 @@ function getPageChangeHandler (data, getIndex, setIndex) {
 
 function processType (data) {
     const type = typeMap[data.type] || 'OverigeOuput'
-    document.getElementById(type + '_1').click()
+    getElementById(type + '_1').click()
 }
 
 function processWork (data, index) {
     if (document.querySelector('#aq-main-form .aq-input').value) {
         if (data.author && data.author[index]) {
-            document.getElementById('Toevoegen_1').click()
+            getElementById('Toevoegen_1').click()
         }
         return
     }
@@ -152,7 +160,7 @@ function processWork (data, index) {
     }
 
     if (data.author && data.author[index]) {
-        document.getElementById('Toevoegen_1').click()
+        getElementById('Toevoegen_1').click()
     }
 }
 
