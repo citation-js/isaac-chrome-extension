@@ -4,9 +4,9 @@ document.getElementById('isaac-citation-js-version').innerHTML = 'Running <a hre
 const searchForm = document.getElementById('isaac-form')
 searchForm.onsubmit = function (event) {
     event.preventDefault()
-    const errorMessage = searchForm.querySelector('output')
-    if (errorMessage) {
-        errorMessage.remove()
+    const messages = searchForm.querySelectorAll('output')
+    for (const message of messages) {
+        message.remove()
     }
 
     const formData = new FormData(searchForm)
@@ -20,7 +20,9 @@ searchForm.onsubmit = function (event) {
             delete data.editor
         }
 
+        displayMessage('Successfully obtained metadata.', false)
         if (data.DOI) {
+            displayMessage('DOI found, also looking for open access status with Unpaywall.', false)
             cjs.util
                 .fetchFileAsync('https://api.unpaywall.org/v2/' + data.DOI + '?email=citationjs@protonmail.com')
                 .then(response => {
@@ -36,14 +38,19 @@ searchForm.onsubmit = function (event) {
             fillForm(data)
         }
     }).catch(function (error) {
-        const message = document.createElement('output')
-        message.setAttribute('style', 'color: red;')
-        message.textContent = error.message
-        searchForm.appendChild(message)
+        displayMessage(error.message, true)
     })
 }
 
+function displayMessage (text, error) {
+    const message = document.createElement('output')
+    if (error) { message.setAttribute('style', 'color: red;') }
+    message.textContent = text
+    searchForm.appendChild(message)
+}
+
 function fillForm (data) {
+    displayMessage('Proceed on the ISAAC page.', false)
     chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },

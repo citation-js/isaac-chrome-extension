@@ -15,3 +15,7 @@ button {
 fieldset {
     border: 0;
 }
+
+ouptut {
+    display: block;
+}
