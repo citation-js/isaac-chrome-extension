@@ -8,7 +8,7 @@ authors:
   given-names: "Egon"
   orcid: "https://orcid.org/0000-0001-7542-0286"
 title: "ISAAC Chrome Extension"
-version: v1.3.0
+version: v1.4.0
 doi: 10.5281/zenodo.6350382
-date-released: 2022-06-04
+date-released: 2022-08-23
 url: "https://github.com/citation-js/isaac-chrome-extension"
