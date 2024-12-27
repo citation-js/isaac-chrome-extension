@@ -5,30 +5,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-var _index = _interopRequireDefault(require("./index.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const async = function (data, options, callback) {
+function async(data, options, callback) {
   if (typeof options === 'function' && !callback) {
     callback = options;
     options = undefined;
   }
-
-  const promise = (0, _index.default)().setAsync(data, options);
-
+  const promise = new this().setAsync(data, options);
   if (typeof callback === 'function') {
     promise.then(callback);
     return undefined;
   } else {
     return promise;
   }
-};
-
-var _default = async;
-exports.default = _default;
-},{"./index.js":3}],2:[function(require,module,exports){
+}
+var _default = exports.default = async;
+},{}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37,23 +28,17 @@ Object.defineProperty(exports, "__esModule", {
 exports.format = format;
 exports.get = get;
 exports.getIds = getIds;
-
-var _static = require("./static.js");
-
+var _validate = require("./validate.js");
 var _output = require("../plugins/output.js");
-
 var _csl = require("../plugins/input/csl.js");
-
 function getIds() {
   return this.data.map(entry => entry.id);
 }
-
 function format(format, ...options) {
   return (0, _output.format)(format, (0, _csl.clean)(this.data), ...options);
 }
-
 function get(options = {}) {
-  (0, _static.validateOutputOptions)(options);
+  (0, _validate.validateOutputOptions)(options);
   const parsedOptions = Object.assign({}, this.defaultOptions, this._options.output, options);
   const {
     type,
@@ -63,7 +48,6 @@ function get(options = {}) {
   const newStyle = styleType === 'citation' ? 'bibliography' : styleType === 'csl' ? 'data' : styleType;
   const newType = type === 'string' ? 'text' : type === 'json' ? 'object' : type;
   let formatOptions;
-
   switch (newStyle) {
     case 'bibliography':
       {
@@ -81,7 +65,6 @@ function get(options = {}) {
         };
         break;
       }
-
     case 'data':
     case 'bibtex':
     case 'bibtxt':
@@ -91,16 +74,13 @@ function get(options = {}) {
         type: newType
       };
       break;
-
     default:
       throw new Error(`Invalid style "${newStyle}"`);
   }
-
   const result = this.format(newStyle, Object.assign(formatOptions, options._newOptions));
   const {
     format
   } = parsedOptions;
-
   if (format === 'real' && newType === 'html' && typeof document !== 'undefined' && typeof document.createElement === 'function') {
     const tmp = document.createElement('div');
     tmp.innerHTML = result;
@@ -111,35 +91,25 @@ function get(options = {}) {
     return result;
   }
 }
-},{"../plugins/input/csl.js":25,"../plugins/output.js":33,"./static.js":8}],3:[function(require,module,exports){
+},{"../plugins/input/csl.js":24,"../plugins/output.js":32,"./validate.js":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 var log = _interopRequireWildcard(require("./log.js"));
-
 var options = _interopRequireWildcard(require("./options.js"));
-
 var set = _interopRequireWildcard(require("./set.js"));
-
 var sort = _interopRequireWildcard(require("./sort.js"));
-
 var get = _interopRequireWildcard(require("./get.js"));
-
 var staticMethods = _interopRequireWildcard(require("./static.js"));
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function Cite(data, options = {}) {
   if (!(this instanceof Cite)) {
     return new Cite(data, options);
   }
-
   this._options = options;
   this.log = [];
   this.data = [];
@@ -147,239 +117,178 @@ function Cite(data, options = {}) {
   this.options(options);
   return this;
 }
-
 Object.assign(Cite.prototype, log, options, set, sort, get);
-
 Cite.prototype[Symbol.iterator] = function* () {
   yield* this.data;
 };
-
 Object.assign(Cite, staticMethods);
-var _default = Cite;
-exports.default = _default;
+var _default = exports.default = Cite;
 },{"./get.js":2,"./log.js":4,"./options.js":5,"./set.js":6,"./sort.js":7,"./static.js":8}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.undo = exports.save = exports.retrieveVersion = exports.retrieveLastVersion = exports.currentVersion = void 0;
-
-var _index = _interopRequireDefault(require("./index.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const currentVersion = function () {
-  return this.log.length;
-};
-
 exports.currentVersion = currentVersion;
-
-const retrieveVersion = function (versnum = 1) {
+exports.retrieveLastVersion = retrieveLastVersion;
+exports.retrieveVersion = retrieveVersion;
+exports.save = save;
+exports.undo = undo;
+function currentVersion() {
+  return this.log.length;
+}
+function retrieveVersion(versnum = 1) {
   if (versnum <= 0 || versnum > this.currentVersion()) {
     return null;
   } else {
     const [data, options] = this.log[versnum - 1];
-    const image = new _index.default(JSON.parse(data), JSON.parse(options));
+    const image = new this.constructor(JSON.parse(data), JSON.parse(options));
     image.log = this.log.slice(0, versnum);
     return image;
   }
-};
-
-exports.retrieveVersion = retrieveVersion;
-
-const undo = function (number = 1) {
+}
+function undo(number = 1) {
   return this.retrieveVersion(this.currentVersion() - number);
-};
-
-exports.undo = undo;
-
-const retrieveLastVersion = function () {
+}
+function retrieveLastVersion() {
   return this.retrieveVersion(this.currentVersion());
-};
-
-exports.retrieveLastVersion = retrieveLastVersion;
-
-const save = function () {
+}
+function save() {
   this.log.push([JSON.stringify(this.data), JSON.stringify(this._options)]);
   return this;
-};
-
-exports.save = save;
-},{"./index.js":3}],5:[function(require,module,exports){
+}
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.options = exports.defaultOptions = void 0;
-
+exports.defaultOptions = void 0;
+exports.options = options;
 var _validate = require("./validate.js");
-
-const defaultOptions = {
+const defaultOptions = exports.defaultOptions = {
   format: 'real',
   type: 'json',
   style: 'csl',
   lang: 'en-US'
 };
-exports.defaultOptions = defaultOptions;
-
-const options = function (options, log) {
+function options(options, log) {
   (0, _validate.validateOutputOptions)(options);
-
   if (log) {
     this.save();
   }
-
   Object.assign(this._options, options);
   return this;
-};
-
-exports.options = options;
+}
 },{"./validate.js":9}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setAsync = exports.set = exports.reset = exports.addAsync = exports.add = void 0;
-
+exports.add = add;
+exports.addAsync = addAsync;
+exports.reset = reset;
+exports.set = set;
+exports.setAsync = setAsync;
 var _index = require("../plugins/input/index.js");
-
 var _fetchId = _interopRequireDefault(require("../util/fetchId.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const add = function (data, options = {}, log = false) {
+function add(data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save();
   }
-
   this.data.push(...(0, _index.chain)(data, options));
   this.data.filter(entry => !Object.prototype.hasOwnProperty.call(entry, 'id')).forEach(entry => {
     entry.id = (0, _fetchId.default)(this.getIds(), 'temp_id_');
   });
   return this;
-};
-
-exports.add = add;
-
-const addAsync = async function (data, options = {}, log = false) {
+}
+async function addAsync(data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save();
   }
-
   this.data.push(...(await (0, _index.chainAsync)(data, options)));
   this.data.filter(entry => !Object.prototype.hasOwnProperty.call(entry, 'id')).forEach(entry => {
     entry.id = (0, _fetchId.default)(this.getIds(), 'temp_id_');
   });
   return this;
-};
-
-exports.addAsync = addAsync;
-
-const set = function (data, options = {}, log = false) {
+}
+function set(data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save();
   }
-
   this.data = [];
   return typeof options !== 'boolean' ? this.add(data, options) : this.add(data);
-};
-
-exports.set = set;
-
-const setAsync = async function (data, options = {}, log = false) {
+}
+async function setAsync(data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save();
   }
-
   this.data = [];
   return typeof options !== 'boolean' ? this.addAsync(data, options) : this.addAsync(data);
-};
-
-exports.setAsync = setAsync;
-
-const reset = function (log) {
+}
+function reset(log) {
   if (log) {
     this.save();
   }
-
   this.data = [];
   this._options = {};
   return this;
-};
-
-exports.reset = reset;
-},{"../plugins/input/index.js":29,"../util/fetchId.js":36}],7:[function(require,module,exports){
+}
+},{"../plugins/input/index.js":28,"../util/fetchId.js":36}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sort = void 0;
-
+exports.sort = sort;
 var _label = require("../plugin-common/output/label.js");
-
 var _name = require("@citation-js/name");
-
-const getComparisonValue = function (obj, prop, label = prop === 'label') {
+function getComparisonValue(obj, prop, label = prop === 'label') {
   let value = label ? (0, _label.getLabel)(obj) : obj[prop];
-
   switch (prop) {
     case 'author':
     case 'editor':
       return value.map(name => name.literal || name.family || (0, _name.format)(name));
-
     case 'accessed':
     case 'issued':
       return value['date-parts'][0];
-
     case 'page':
       return value.split('-').map(num => parseInt(num));
-
     case 'edition':
     case 'issue':
     case 'volume':
       value = parseInt(value);
       return !isNaN(value) ? value : -Infinity;
-
     default:
       return value || -Infinity;
   }
-};
-
-const compareProp = function (entryA, entryB, prop, flip = /^!/.test(prop)) {
+}
+function compareProp(entryA, entryB, prop, flip = /^!/.test(prop)) {
   prop = prop.replace(/^!/, '');
   const a = getComparisonValue(entryA, prop);
   const b = getComparisonValue(entryB, prop);
   return (flip ? -1 : 1) * (a > b ? 1 : a < b ? -1 : 0);
-};
-
-const getSortCallback = function (...props) {
+}
+function getSortCallback(...props) {
   return (a, b) => {
     const keys = props.slice();
     let output = 0;
-
     while (!output && keys.length) {
       output = compareProp(a, b, keys.shift());
     }
-
     return output;
   };
-};
-
-const sort = function (method = [], log) {
+}
+function sort(method = [], log) {
   if (log) {
     this.save();
   }
-
   this.data.sort(typeof method === 'function' ? method : getSortCallback(...method, 'label'));
   return this;
-};
-
-exports.sort = sort;
-},{"../plugin-common/output/label.js":20,"@citation-js/name":46}],8:[function(require,module,exports){
+}
+},{"../plugin-common/output/label.js":19,"@citation-js/name":46}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -394,11 +303,8 @@ Object.defineProperty(exports, "async", {
     return _async.default;
   }
 });
-
 var _async = _interopRequireDefault(require("./async.js"));
-
 var _validate = require("./validate.js");
-
 Object.keys(_validate).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -410,7 +316,6 @@ Object.keys(_validate).forEach(function (key) {
     }
   });
 });
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 },{"./async.js":1,"./validate.js":9}],9:[function(require,module,exports){
 "use strict";
@@ -424,12 +329,10 @@ const formats = ['real', 'string'];
 const types = ['json', 'html', 'string', 'rtf'];
 const styles = ['csl', 'bibtex', 'bibtxt', 'citation-*', 'ris', 'ndjson'];
 const wrapperTypes = ['string', 'function'];
-
 function validateOutputOptions(options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options not an object!');
   }
-
   const {
     format,
     type,
@@ -438,7 +341,6 @@ function validateOutputOptions(options) {
     append,
     prepend
   } = options;
-
   if (format && !formats.includes(format)) {
     throw new TypeError(`Option format ("${format}") should be one of: ${formats}`);
   } else if (type && !types.includes(type)) {
@@ -452,19 +354,15 @@ function validateOutputOptions(options) {
   } else if (append && !wrapperTypes.includes(typeof append)) {
     throw new TypeError(`Option append should be a string or a function, but is a ${typeof append}`);
   }
-
   if (/^citation/.test(style) && type === 'json') {
     throw new Error(`Combination type/style of json/citation-* is not valid: ${type}/${style}`);
   }
-
   return true;
 }
-
 function validateOptions(options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options should be an object');
   }
-
   if (options.output) {
     validateOutputOptions(options.output);
   } else if (options.maxChainLength && typeof options.maxChainLength !== 'number') {
@@ -478,7 +376,6 @@ function validateOptions(options) {
   } else if (options.target != null && typeof options.target !== 'string') {
     throw new TypeError('Option target should be a boolean');
   }
-
   return true;
 }
 },{}],10:[function(require,module,exports){
@@ -492,63 +389,49 @@ exports.default = void 0;
 const logger = {
   _output(level, scope, msg) {
     this._log.push(scope, msg);
-
     if (this._levels.indexOf(level) < this._levels.indexOf(this.level)) {
       return;
     }
-
     this._console.log(scope, ...msg);
   },
-
   _console: null,
   _log: [],
   _levels: ['http', 'debug', 'unmapped', 'info', 'warn', 'error', 'silent'],
   level: 'silent'
 };
-
 for (const level of logger._levels) {
   logger[level] = (scope, ...msg) => logger._output(level, scope, msg);
 }
-
 if (typeof console.Console === 'function') {
   logger._console = new console.Console(process.stderr);
 } else {
   logger._console = console;
 }
-
-var _default = logger;
-exports.default = _default;
+var _default = exports.default = logger;
 }).call(this)}).call(this,require('_process'))
-},{"_process":65}],11:[function(require,module,exports){
+},{"_process":64}],11:[function(require,module,exports){
 "use strict";
 
 var plugins = _interopRequireWildcard(require("../plugins"));
-
 var _input = require("./input/");
-
 var _output = _interopRequireDefault(require("./output/"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 plugins.add(_input.ref, {
   input: _input.formats,
   output: _output.default
 });
-},{"../plugins":23,"./input/":14,"./output/":18}],12:[function(require,module,exports){
+},{"../plugins":22,"./input/":14,"./output/":17}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parse = void 0;
-
-const parse = () => [];
-
 exports.parse = parse;
+function parse() {
+  return [];
+}
 },{}],13:[function(require,module,exports){
 "use strict";
 
@@ -556,7 +439,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parse = parse;
-
 function parse(input) {
   return input.value || input.textContent;
 }
@@ -567,32 +449,20 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ref = exports.parsers = exports.formats = void 0;
-
 var empty = _interopRequireWildcard(require("./empty.js"));
-
-var url = _interopRequireWildcard(require("./url.js"));
-
 var json = _interopRequireWildcard(require("./json.js"));
-
 var jquery = _interopRequireWildcard(require("./jquery.js"));
-
 var html = _interopRequireWildcard(require("./html.js"));
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const ref = '@else';
-exports.ref = ref;
-const parsers = {
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const ref = exports.ref = '@else';
+const parsers = exports.parsers = {
   empty,
-  url,
   json,
   jquery,
   html
 };
-exports.parsers = parsers;
-const formats = {
+const formats = exports.formats = {
   '@empty/text': {
     parse: empty.parse,
     parseType: {
@@ -622,8 +492,6 @@ const formats = {
     }
   },
   '@else/url': {
-    parse: url.parse,
-    parseAsync: url.parseAsync,
     parseType: {
       dataType: 'String',
       predicate: /^https?:\/\/(([\w-]+\.)*[\w-]+)(:\d+)?(\/[^?/]*)*(\?[^#]*)?(#.*)?$/i
@@ -633,34 +501,28 @@ const formats = {
     parse: jquery.parse,
     parseType: {
       dataType: 'ComplexObject',
-
       predicate(input) {
         return typeof jQuery !== 'undefined' && input instanceof jQuery;
       }
-
     }
   },
   '@else/html': {
     parse: html.parse,
     parseType: {
       dataType: 'ComplexObject',
-
       predicate(input) {
         return typeof HTMLElement !== 'undefined' && input instanceof HTMLElement;
       }
-
     }
   }
 };
-exports.formats = formats;
-},{"./empty.js":12,"./html.js":13,"./jquery.js":15,"./json.js":16,"./url.js":17}],15:[function(require,module,exports){
+},{"./empty.js":12,"./html.js":13,"./jquery.js":15,"./json.js":16}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.parse = parse;
-
 function parse(input) {
   return input.val() || input.text() || input.html();
 }
@@ -670,70 +532,36 @@ function parse(input) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parse = exports.default = void 0;
-
+exports.default = exports.parse = parseJSON;
 var _logger = _interopRequireDefault(require("../../logger.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 const substituters = [[/((?:\[|:|,)\s*)'((?:\\'|[^'])*?[^\\])?'(?=\s*(?:\]|}|,))/g, '$1"$2"'], [/((?:(?:"|]|}|\/[gmiuys]|\.|(?:\d|\.|-)*\d)\s*,|{)\s*)(?:"([^":\n]+?)"|'([^":\n]+?)'|([^":\n]+?))(\s*):/g, '$1"$2$3$4"$5:']];
-
-const parseJSON = function (str) {
+function parseJSON(str) {
   if (typeof str !== 'string') {
     return JSON.parse(str);
   }
-
   try {
     return JSON.parse(str);
   } catch (e) {
     _logger.default.debug('[plugin-common]', 'Invalid JSON, switching to experimental parser');
-
     substituters.forEach(([regex, subst]) => {
       str = str.replace(regex, subst);
     });
     return JSON.parse(str);
   }
-};
-
-exports.default = exports.parse = parseJSON;
+}
 },{"../../logger.js":10}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "parse", {
-  enumerable: true,
-  get: function () {
-    return _index.fetchFile;
-  }
-});
-Object.defineProperty(exports, "parseAsync", {
-  enumerable: true,
-  get: function () {
-    return _index.fetchFileAsync;
-  }
-});
-
-var _index = require("../../util/index.js");
-},{"../../util/index.js":38}],18:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.default = void 0;
-
 var _json = _interopRequireDefault(require("./json.js"));
-
 var _label = _interopRequireDefault(require("./label.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _default = Object.assign({}, _json.default, _label.default);
-
-exports.default = _default;
-},{"./json.js":19,"./label.js":20}],19:[function(require,module,exports){
+var _default = exports.default = Object.assign({}, _json.default, _label.default);
+},{"./json.js":18,"./label.js":19}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -741,37 +569,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 exports.getJsonWrapper = getJsonWrapper;
-
 var plugins = _interopRequireWildcard(require("../../plugins/index.js"));
-
 var util = _interopRequireWildcard(require("../../util/index.js"));
-
 var _logger = _interopRequireDefault(require("../../logger.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const appendCommas = (string, index, array) => string + (index < array.length - 1 ? ',' : '');
-
-const getJsonObject = function (src, dict) {
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function appendCommas(string, index, array) {
+  return string + (index < array.length - 1 ? ',' : '');
+}
+function getJsonObject(src, dict) {
   const isArray = Array.isArray(src);
   let entries;
-
   if (isArray) {
     entries = src.map(entry => getJsonValue(entry, dict));
   } else {
     entries = Object.keys(src).filter(prop => JSON.stringify(src[prop])).map(prop => `"${prop}": ${getJsonValue(src[prop], dict)}`);
   }
-
   entries = entries.map(appendCommas).map(entry => dict.listItem.join(entry));
   entries = dict.list.join(entries.join(''));
   return isArray ? `[${entries}]` : `{${entries}}`;
-};
-
-const getJsonValue = function (src, dict) {
+}
+function getJsonValue(src, dict) {
   if (typeof src === 'object' && src !== null) {
     if (src.length === 0) {
       return '[]';
@@ -783,145 +602,134 @@ const getJsonValue = function (src, dict) {
   } else {
     return JSON.stringify(src);
   }
-};
-
-const getJson = function (src, dict) {
+}
+function getJson(src, dict) {
   let entries = src.map(entry => getJsonObject(entry, dict));
   entries = entries.map(appendCommas).map(entry => dict.entry.join(entry));
   entries = entries.join('');
   return dict.bibliographyContainer.join(`[${entries}]`);
-};
-
+}
 function getJsonWrapper(src) {
   return getJson(src, plugins.dict.get('html'));
 }
-
-var _default = {
+var _default = exports.default = {
   data(data, {
     type,
-    format = type || 'text'
+    format = type || 'text',
+    version = '1.0.2'
   } = {}) {
+    if (version < '1.0.2') {
+      data = util.downgradeCsl(data);
+    }
     if (format === 'object') {
       return util.deepCopy(data);
     } else if (format === 'text') {
       return JSON.stringify(data, null, 2);
     } else {
       _logger.default.warn('[core]', 'This feature (JSON output with special formatting) is unstable. See https://github.com/larsgw/citation.js/issues/144');
-
       return getJson(data, plugins.dict.get(format));
     }
   },
-
-  ndjson(data) {
+  ndjson(data, {
+    version = '1.0.2'
+  } = {}) {
+    if (version < '1.0.2') {
+      data = util.downgradeCsl(data);
+    }
     return data.map(entry => JSON.stringify(entry)).join('\n');
   }
-
 };
-exports.default = _default;
-},{"../../logger.js":10,"../../plugins/index.js":23,"../../util/index.js":38}],20:[function(require,module,exports){
+},{"../../logger.js":10,"../../plugins/index.js":22,"../../util/index.js":38}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getLabel = exports.default = void 0;
-
-const getLabel = entry => {
+exports.default = void 0;
+exports.getLabel = getLabel;
+function getLabel(entry) {
   if ('citation-label' in entry) {
     return entry['citation-label'];
   }
-
   let res = '';
-
   if (entry.author) {
     res += entry.author[0].family || entry.author[0].literal;
   }
-
   if (entry.issued && entry.issued['date-parts'] && entry.issued['date-parts'][0]) {
     res += entry.issued['date-parts'][0][0];
   }
-
   if (entry['year-suffix']) {
     res += entry['year-suffix'];
   } else if (entry.title) {
     res += entry.title.replace(/<\/?.*?>/g, '').match(/^(?:(?:the|a|an)\s+)?(\S+)/i)[1];
   }
-
   return res;
-};
-
-exports.getLabel = getLabel;
-var _default = {
+}
+var _default = exports.default = {
   label(data) {
     return data.reduce((object, entry) => {
       object[entry.id] = getLabel(entry);
       return object;
     }, {});
   }
-
 };
-exports.default = _default;
+},{}],20:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.add = add;
+exports.get = get;
+exports.has = has;
+exports.list = list;
+exports.remove = remove;
+const configs = {};
+function add(ref, config) {
+  configs[ref] = config;
+}
+function get(ref) {
+  return configs[ref];
+}
+function has(ref) {
+  return Object.prototype.hasOwnProperty.call(configs, ref);
+}
+function remove(ref) {
+  delete configs[ref];
+}
+function list() {
+  return Object.keys(configs);
+}
 },{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.remove = exports.list = exports.has = exports.get = exports.add = void 0;
-const configs = {};
-
-const add = (ref, config) => {
-  configs[ref] = config;
-};
-
 exports.add = add;
-
-const get = ref => configs[ref];
-
 exports.get = get;
-
-const has = ref => Object.prototype.hasOwnProperty.call(configs, ref);
-
 exports.has = has;
-
-const remove = ref => {
-  delete configs[ref];
-};
-
-exports.remove = remove;
-
-const list = () => Object.keys(configs);
-
+exports.htmlDict = void 0;
 exports.list = list;
-},{}],22:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.textDict = exports.remove = exports.register = exports.list = exports.htmlDict = exports.has = exports.get = exports.add = void 0;
-
+exports.register = void 0;
+exports.remove = remove;
+exports.textDict = void 0;
 var _register = _interopRequireDefault(require("../util/register.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const validate = (name, dict) => {
+function validate(name, dict) {
   if (typeof name !== 'string') {
     throw new TypeError(`Invalid dict name, expected string, got ${typeof name}`);
   } else if (typeof dict !== 'object') {
     throw new TypeError(`Invalid dict, expected object, got ${typeof dict}`);
   }
-
   for (const entryName in dict) {
     const entry = dict[entryName];
-
     if (!Array.isArray(entry) || entry.some(part => typeof part !== 'string')) {
       throw new TypeError(`Invalid dict entry "${entryName}", expected array of strings`);
     }
   }
-};
-
-const register = new _register.default({
+}
+const register = exports.register = new _register.default({
   html: {
     bibliographyContainer: ['<div class="csl-bib-body">', '</div>'],
     entry: ['<div class="csl-entry">', '</div>'],
@@ -935,43 +743,26 @@ const register = new _register.default({
     listItem: ['\t', '\n']
   }
 });
-exports.register = register;
-
-const add = (name, dict) => {
+function add(name, dict) {
   validate(name, dict);
   register.set(name, dict);
-};
-
-exports.add = add;
-
-const remove = name => {
+}
+function remove(name) {
   register.remove(name);
-};
-
-exports.remove = remove;
-
-const has = name => {
+}
+function has(name) {
   return register.has(name);
-};
-
-exports.has = has;
-
-const list = () => {
+}
+function list() {
   return register.list();
-};
-
-exports.list = list;
-
-const get = name => {
+}
+function get(name) {
   if (!register.has(name)) {
     throw new Error(`Dict "${name}" unavailable`);
   }
-
   return register.get(name);
-};
-
-exports.get = get;
-const htmlDict = {
+}
+const htmlDict = exports.htmlDict = {
   wr_start: '<div class="csl-bib-body">',
   wr_end: '</div>',
   en_start: '<div class="csl-entry">',
@@ -981,8 +772,7 @@ const htmlDict = {
   li_start: '<li>',
   li_end: '</li>'
 };
-exports.htmlDict = htmlDict;
-const textDict = {
+const textDict = exports.textDict = {
   wr_start: '',
   wr_end: '\n',
   en_start: '',
@@ -992,35 +782,29 @@ const textDict = {
   li_start: '\t',
   li_end: '\n'
 };
-exports.textDict = textDict;
-},{"../util/register.js":39}],23:[function(require,module,exports){
+},{"../util/register.js":39}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.remove = exports.output = exports.list = exports.input = exports.has = exports.dict = exports.config = exports.add = void 0;
-
+exports.add = add;
+exports.dict = exports.config = void 0;
+exports.has = has;
+exports.input = void 0;
+exports.list = list;
+exports.output = void 0;
+exports.remove = remove;
 var input = _interopRequireWildcard(require("./input/index.js"));
-
 exports.input = input;
-
 var output = _interopRequireWildcard(require("./output.js"));
-
 exports.output = output;
-
 var dict = _interopRequireWildcard(require("./dict.js"));
-
 exports.dict = dict;
-
 var config = _interopRequireWildcard(require("./config.js"));
-
 exports.config = config;
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 const registers = {
   input,
   output,
@@ -1028,10 +812,8 @@ const registers = {
   config
 };
 const indices = {};
-
-const add = (ref, plugins = {}) => {
+function add(ref, plugins = {}) {
   const mainIndex = indices[ref] = {};
-
   for (const type in plugins) {
     if (type === 'config') {
       mainIndex.config = {
@@ -1040,79 +822,56 @@ const add = (ref, plugins = {}) => {
       registers.config.add(ref, plugins.config);
       continue;
     }
-
     const typeIndex = mainIndex[type] = {};
     const typePlugins = plugins[type];
-
     for (const name in typePlugins) {
       const typePlugin = typePlugins[name];
       typeIndex[name] = true;
       registers[type].add(name, typePlugin);
     }
   }
-};
-
-exports.add = add;
-
-const remove = ref => {
+}
+function remove(ref) {
   const mainIndex = indices[ref];
-
   for (const type in mainIndex) {
     const typeIndex = mainIndex[type];
-
     for (const name in typeIndex) {
       registers[type].remove(name);
     }
   }
-
   delete indices[ref];
-};
-
-exports.remove = remove;
-
-const has = ref => ref in indices;
-
-exports.has = has;
-
-const list = () => Object.keys(indices);
-
-exports.list = list;
-},{"./config.js":21,"./dict.js":22,"./input/index.js":29,"./output.js":33}],24:[function(require,module,exports){
+}
+function has(ref) {
+  return ref in indices;
+}
+function list() {
+  return Object.keys(indices);
+}
+},{"./config.js":20,"./dict.js":21,"./input/index.js":28,"./output.js":32}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.chainLinkAsync = exports.chainLink = exports.chainAsync = exports.chain = void 0;
-
-var _deepCopy = _interopRequireDefault(require("../../util/deepCopy.js"));
-
+var _index = require("../../util/index.js");
 var _logger = _interopRequireDefault(require("../../logger.js"));
-
 var _register = require("./register.js");
-
 var _type = require("./type.js");
-
 var _data = require("./data.js");
-
 var _graph = require("./graph.js");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function prepareParseGraph(graph) {
   return graph.reduce((array, next) => {
     const last = array[array.length - 1];
-
     if (last && last.type === next.type) {
       last.count = last.count + 1 || 2;
     } else {
       array.push(next);
     }
-
     return array;
   }, []).map(element => (element.count > 1 ? element.count + 'x ' : '') + element.type).join(' -> ');
 }
-
 class ChainParser {
   constructor(input, options = {}) {
     this.options = Object.assign({
@@ -1123,29 +882,25 @@ class ChainParser {
       target: '@csl/list+object'
     }, options);
     this.type = this.options.forceType;
-    this.data = typeof input === 'object' ? (0, _deepCopy.default)(input) : input;
+    this.data = typeof input === 'object' ? (0, _index.deepCopy)(input) : input;
     this.graph = [{
       type: this.type,
       data: input
     }];
     this.iteration = 0;
   }
-
   iterate() {
     if (this.iteration !== 0) {
       const typeInfo = (0, _register.get)(this.type);
-
       if (typeInfo && typeInfo.outputs) {
         this.type = typeInfo.outputs;
       } else {
         this.type = (0, _type.type)(this.data);
       }
-
       this.graph.push({
         type: this.type
       });
     }
-
     if (this.error || this.type === this.options.target) {
       return false;
     } else if (this.iteration >= this.options.maxChainLength) {
@@ -1156,28 +911,23 @@ class ChainParser {
       return true;
     }
   }
-
   end() {
     if (this.error) {
       _logger.default.error('[core]', this.error.message);
-
       if (this.options.strict !== false) {
         throw this.error;
       } else {
         return [];
       }
     } else if (this.options.target === '@csl/list+object') {
-      return this.data.map(this.options.generateGraph ? entry => (0, _graph.applyGraph)(entry, this.graph) : _graph.removeGraph);
+      return (0, _index.upgradeCsl)(this.data).map(this.options.generateGraph ? entry => (0, _graph.applyGraph)(entry, this.graph) : _graph.removeGraph);
     } else {
       return this.data;
     }
   }
-
 }
-
 const chain = (...args) => {
   const chain = new ChainParser(...args);
-
   while (chain.iterate()) {
     try {
       chain.data = (0, _data.data)(chain.data, chain.type);
@@ -1185,57 +935,44 @@ const chain = (...args) => {
       chain.error = e;
     }
   }
-
   return chain.end();
 };
-
 exports.chain = chain;
-
 const chainLink = input => {
   const type = (0, _type.type)(input);
-  const output = type.match(/array|object/) ? (0, _deepCopy.default)(input) : input;
+  const output = type.match(/array|object/) ? (0, _index.deepCopy)(input) : input;
   return (0, _data.data)(output, type);
 };
-
 exports.chainLink = chainLink;
-
 const chainAsync = async (...args) => {
   const chain = new ChainParser(...args);
-
   while (chain.iterate()) {
     chain.data = await (0, _data.dataAsync)(chain.data, chain.type).catch(e => {
       chain.error = e;
     });
   }
-
   return chain.end();
 };
-
 exports.chainAsync = chainAsync;
-
 const chainLinkAsync = async input => {
   const type = (0, _type.type)(input);
-  const output = type.match(/array|object/) ? (0, _deepCopy.default)(input) : input;
+  const output = type.match(/array|object/) ? (0, _index.deepCopy)(input) : input;
   return (0, _data.dataAsync)(output, type);
 };
-
 exports.chainLinkAsync = chainLinkAsync;
-},{"../../logger.js":10,"../../util/deepCopy.js":34,"./data.js":26,"./graph.js":28,"./register.js":31,"./type.js":32}],25:[function(require,module,exports){
+},{"../../logger.js":10,"../../util/index.js":38,"./data.js":25,"./graph.js":27,"./register.js":30,"./type.js":31}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.clean = void 0;
-
+exports.clean = parseCsl;
 var _name = require("@citation-js/name");
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 const NAME = 1;
 const NAME_LIST = 2;
 const DATE = 3;
@@ -1289,23 +1026,38 @@ const entryTypes = {
   'journal-article': 'article-journal',
   'book-chapter': 'chapter',
   'posted-content': 'manuscript',
-  'proceedings-article': 'paper-conference'
+  'proceedings-article': 'paper-conference',
+  dissertation: 'thesis'
 };
 const fieldTypes = {
   author: NAME_LIST,
+  chair: NAME_LIST,
   'collection-editor': NAME_LIST,
+  compiler: NAME_LIST,
   composer: NAME_LIST,
   'container-author': NAME_LIST,
+  contributor: NAME_LIST,
+  curator: NAME_LIST,
+  director: NAME_LIST,
   editor: NAME_LIST,
   'editorial-director': NAME_LIST,
-  director: NAME_LIST,
+  'executive-producer': NAME_LIST,
+  guest: NAME_LIST,
+  host: NAME_LIST,
   interviewer: NAME_LIST,
   illustrator: NAME_LIST,
+  narrator: NAME_LIST,
+  organizer: NAME_LIST,
   'original-author': NAME_LIST,
+  performer: NAME_LIST,
+  producer: NAME_LIST,
   'reviewed-author': NAME_LIST,
   recipient: NAME_LIST,
+  'script-writer': NAME_LIST,
+  'series-creator': NAME_LIST,
   translator: NAME_LIST,
   accessed: DATE,
+  'available-date': DATE,
   container: DATE,
   'event-date': DATE,
   issued: DATE,
@@ -1313,6 +1065,7 @@ const fieldTypes = {
   submitted: DATE,
   type: TYPE,
   categories: 'object',
+  custom: 'object',
   id: ['string', 'number'],
   language: 'string',
   journalAbbreviation: 'string',
@@ -1320,21 +1073,25 @@ const fieldTypes = {
   abstract: 'string',
   annote: 'string',
   archive: 'string',
+  archive_collection: 'string',
   archive_location: 'string',
   'archive-place': 'string',
   authority: 'string',
   'call-number': 'string',
   'chapter-number': 'string',
   'citation-number': 'string',
+  'citation-key': 'string',
   'citation-label': 'string',
   'collection-number': 'string',
   'collection-title': 'string',
   'container-title': 'string',
   'container-title-short': 'string',
   dimensions: 'string',
+  division: 'string',
   DOI: 'string',
   edition: ['string', 'number'],
   event: 'string',
+  'event-title': 'string',
   'event-place': 'string',
   'first-reference-note-number': 'string',
   genre: 'string',
@@ -1354,42 +1111,54 @@ const fieldTypes = {
   'original-title': 'string',
   page: 'string',
   'page-first': 'string',
+  'part-number': ['string', 'number'],
+  'part-title': 'string',
   PMCID: 'string',
   PMID: 'string',
+  printing: 'string',
   publisher: 'string',
   'publisher-place': 'string',
   references: 'string',
   'reviewed-title': 'string',
+  'reviewed-genre': 'string',
   scale: 'string',
   section: 'string',
   source: 'string',
   status: 'string',
+  supplement: ['string', 'number'],
   title: 'string',
   'title-short': 'string',
   URL: 'string',
   version: 'string',
   volume: ['string', 'number'],
+  'volume-title': 'string',
+  'volume-title-short': 'string',
   'year-suffix': 'string'
 };
-
-const correctName = function (name, bestGuessConversions) {
+function correctName(name, bestGuessConversions) {
   if (typeof name === 'object' && name !== null && (name.literal || name.given || name.family)) {
+    if (name.ORCID || name.orcid || name._ORCID) {
+      name = _objectSpread({
+        _orcid: name.ORCID || name.orcid || name._ORCID
+      }, name);
+      delete name.ORCID;
+      delete name.orcid;
+      delete name._ORCID;
+    }
     return name;
   } else if (!bestGuessConversions) {
     return undefined;
   } else if (typeof name === 'string') {
     return (0, _name.parse)(name);
   }
-};
-
-const correctNameList = function (nameList, bestGuessConversions) {
+}
+function correctNameList(nameList, bestGuessConversions) {
   if (nameList instanceof Array) {
     const names = nameList.map(name => correctName(name, bestGuessConversions)).filter(Boolean);
     return names.length ? names : undefined;
   }
-};
-
-const correctDateParts = function (dateParts, bestGuessConversions) {
+}
+function correctDateParts(dateParts, bestGuessConversions) {
   if (dateParts.every(part => typeof part === 'number')) {
     return dateParts;
   } else if (!bestGuessConversions || dateParts.some(part => isNaN(parseInt(part)))) {
@@ -1397,11 +1166,9 @@ const correctDateParts = function (dateParts, bestGuessConversions) {
   } else {
     return dateParts.map(part => parseInt(part));
   }
-};
-
-const correctDate = function (date, bestGuessConversions) {
+}
+function correctDate(date, bestGuessConversions) {
   const dp = 'date-parts';
-
   if (typeof date !== 'object' || date === null) {
     return undefined;
   } else if (date[dp] instanceof Array && date[dp].every(part => part instanceof Array)) {
@@ -1422,40 +1189,34 @@ const correctDate = function (date, bestGuessConversions) {
   } else if ('literal' in date || 'raw' in date) {
     return date;
   }
-};
-
-const correctType = function (type, bestGuessConversions) {
+}
+function correctType(type, bestGuessConversions) {
   type = correctField('language', type, bestGuessConversions);
-
   if (entryTypes[type] === true) {
     return type;
-  } else if (bestGuessConversions && type in entryTypes) {
-    return entryTypes[type];
-  } else {
-    return undefined;
   }
-};
-
-const correctField = function (fieldName, value, bestGuessConversions) {
+  if (bestGuessConversions) {
+    if (type in entryTypes) {
+      return entryTypes[type];
+    } else if (type.toLowerCase() !== type) {
+      return correctType(type.toLowerCase(), bestGuessConversions);
+    }
+  }
+  return undefined;
+}
+function correctField(fieldName, value, bestGuessConversions) {
   const fieldType = [].concat(fieldTypes[fieldName]);
-
   switch (fieldTypes[fieldName]) {
     case NAME:
       return correctName(value, bestGuessConversions);
-
     case NAME_LIST:
       return correctNameList(value, bestGuessConversions);
-
     case DATE:
       return correctDate(value, bestGuessConversions);
-
     case TYPE:
       return correctType(value, bestGuessConversions);
   }
-
-  if (/^_/.test(fieldName)) {
-    return value;
-  } else if (bestGuessConversions) {
+  if (bestGuessConversions) {
     if (typeof value === 'string' && fieldType.includes('number') && !fieldType.includes('string') && !isNaN(+value)) {
       return parseFloat(value);
     } else if (typeof value === 'number' && fieldType.includes('string') && !fieldType.includes('number')) {
@@ -1464,56 +1225,49 @@ const correctField = function (fieldName, value, bestGuessConversions) {
       return correctField(fieldName, value[0], bestGuessConversions);
     }
   }
-
   if (fieldType.includes(typeof value)) {
     return value;
   }
-};
-
-const parseCsl = function (data, bestGuessConversions = true) {
+}
+function parseCsl(data, bestGuessConversions = true) {
   return data.map(function (entry) {
     const clean = {};
-
     for (const field in entry) {
       const correction = correctField(field, entry[field], bestGuessConversions);
-
       if (correction !== undefined) {
         clean[field] = correction;
       }
     }
-
     return clean;
   });
-};
-
-exports.clean = parseCsl;
-},{"@citation-js/name":46}],26:[function(require,module,exports){
+}
+},{"@citation-js/name":46}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.removeDataParser = exports.listDataParser = exports.hasDataParser = exports.dataAsync = exports.data = exports.addDataParser = void 0;
-
+exports.addDataParser = addDataParser;
+exports.data = data;
+exports.dataAsync = dataAsync;
+exports.hasDataParser = hasDataParser;
+exports.listDataParser = listDataParser;
+exports.removeDataParser = removeDataParser;
 var _chain = require("./chain.js");
-
-const flatten = array => [].concat(...array);
-
 const parsers = {};
 const asyncParsers = {};
 const nativeParsers = {
   '@csl/object': input => [input],
   '@csl/list+object': input => input,
-  '@else/list+object': input => flatten(input.map(_chain.chain)),
+  '@else/list+object': input => input.map(_chain.chain).flat(),
   '@invalid': () => {
     throw new Error('This format is not supported or recognized');
   }
 };
 const nativeAsyncParsers = {
-  '@else/list+object': async input => flatten(await Promise.all(input.map(_chain.chainAsync)))
+  '@else/list+object': async input => (await Promise.all(input.map(_chain.chainAsync))).flat()
 };
-
-const data = (input, type) => {
+function data(input, type) {
   if (typeof parsers[type] === 'function') {
     return parsers[type](input);
   } else if (typeof nativeParsers[type] === 'function') {
@@ -1521,11 +1275,8 @@ const data = (input, type) => {
   } else {
     throw new TypeError(`No synchronous parser found for ${type}`);
   }
-};
-
-exports.data = data;
-
-const dataAsync = async (input, type) => {
+}
+async function dataAsync(input, type) {
   if (typeof asyncParsers[type] === 'function') {
     return asyncParsers[type](input);
   } else if (typeof nativeAsyncParsers[type] === 'function') {
@@ -1535,64 +1286,48 @@ const dataAsync = async (input, type) => {
   } else {
     throw new TypeError(`No parser found for ${type}`);
   }
-};
-
-exports.dataAsync = dataAsync;
-
-const addDataParser = (format, {
+}
+function addDataParser(format, {
   parser,
   async
-}) => {
+}) {
   if (async) {
     asyncParsers[format] = parser;
   } else {
     parsers[format] = parser;
   }
-};
-
-exports.addDataParser = addDataParser;
-
-const hasDataParser = (type, async) => async ? asyncParsers[type] || nativeAsyncParsers[type] : parsers[type] || nativeParsers[type];
-
-exports.hasDataParser = hasDataParser;
-
-const removeDataParser = (type, async) => {
+}
+function hasDataParser(type, async) {
+  return async ? asyncParsers[type] || nativeAsyncParsers[type] : parsers[type] || nativeParsers[type];
+}
+function removeDataParser(type, async) {
   delete (async ? asyncParsers : parsers)[type];
-};
-
-exports.removeDataParser = removeDataParser;
-
-const listDataParser = async => Object.keys(async ? asyncParsers : parsers);
-
-exports.listDataParser = listDataParser;
-},{"./chain.js":24}],27:[function(require,module,exports){
+}
+function listDataParser(async) {
+  return Object.keys(async ? asyncParsers : parsers);
+}
+},{"./chain.js":23}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.typeOf = exports.dataTypeOf = void 0;
-
-const typeOf = thing => {
+exports.dataTypeOf = dataTypeOf;
+exports.typeOf = typeOf;
+function typeOf(thing) {
   switch (thing) {
     case undefined:
       return 'Undefined';
-
     case null:
       return 'Null';
-
     default:
       return thing.constructor.name;
   }
-};
-
-exports.typeOf = typeOf;
-
-const dataTypeOf = thing => {
+}
+function dataTypeOf(thing) {
   switch (typeof thing) {
     case 'string':
       return 'String';
-
     case 'object':
       if (Array.isArray(thing)) {
         return 'Array';
@@ -1601,45 +1336,35 @@ const dataTypeOf = thing => {
       } else if (typeOf(thing) !== 'Null') {
         return 'ComplexObject';
       }
-
     default:
       return 'Primitive';
   }
-};
-
-exports.dataTypeOf = dataTypeOf;
-},{}],28:[function(require,module,exports){
+}
+},{}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.removeGraph = exports.applyGraph = void 0;
-
-const applyGraph = (entry, graph) => {
+exports.applyGraph = applyGraph;
+exports.removeGraph = removeGraph;
+function applyGraph(entry, graph) {
   if (entry._graph) {
     const index = graph.findIndex(({
       type
     }) => type === '@else/list+object');
-
     if (index !== -1) {
       graph.splice(index + 1, 0, ...entry._graph.slice(0, -1));
     }
   }
-
   entry._graph = graph;
   return entry;
-};
-
-exports.applyGraph = applyGraph;
-
-const removeGraph = entry => {
+}
+function removeGraph(entry) {
   delete entry._graph;
   return entry;
-};
-
-exports.removeGraph = removeGraph;
-},{}],29:[function(require,module,exports){
+}
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1649,17 +1374,11 @@ var _exportNames = {
   util: true
 };
 exports.util = void 0;
-
 var dataType = _interopRequireWildcard(require("./dataType.js"));
-
 var graph = _interopRequireWildcard(require("./graph.js"));
-
 var parser = _interopRequireWildcard(require("./parser.js"));
-
 var csl = _interopRequireWildcard(require("./csl.js"));
-
 var _register = require("./register");
-
 Object.keys(_register).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -1671,9 +1390,7 @@ Object.keys(_register).forEach(function (key) {
     }
   });
 });
-
 var _chain = require("./chain");
-
 Object.keys(_chain).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -1685,9 +1402,7 @@ Object.keys(_chain).forEach(function (key) {
     }
   });
 });
-
 var _type = require("./type");
-
 Object.keys(_type).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -1699,9 +1414,7 @@ Object.keys(_type).forEach(function (key) {
     }
   });
 });
-
 var _data = require("./data");
-
 Object.keys(_data).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
@@ -1713,85 +1426,65 @@ Object.keys(_data).forEach(function (key) {
     }
   });
 });
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const util = Object.assign({}, dataType, graph, parser, csl);
-exports.util = util;
-},{"./chain":24,"./csl.js":25,"./data":26,"./dataType.js":27,"./graph.js":28,"./parser.js":30,"./register":31,"./type":32}],30:[function(require,module,exports){
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const util = exports.util = Object.assign({}, dataType, graph, parser, csl);
+},{"./chain":23,"./csl.js":24,"./data":25,"./dataType.js":26,"./graph.js":27,"./parser.js":29,"./register":30,"./type":31}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TypeParser = exports.FormatParser = exports.DataParser = void 0;
-
 var _type = require("./type.js");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 class TypeParser {
   constructor(data) {
     _defineProperty(this, "validDataTypes", ['String', 'Array', 'SimpleObject', 'ComplexObject', 'Primitive']);
-
     this.data = data;
   }
-
   validateDataType() {
     const dataType = this.data.dataType;
-
     if (dataType && !this.validDataTypes.includes(dataType)) {
       throw new RangeError(`dataType was ${dataType}; expected one of ${this.validDataTypes}`);
     }
   }
-
   validateParseType() {
     const predicate = this.data.predicate;
-
     if (predicate && !(predicate instanceof RegExp || typeof predicate === 'function')) {
       throw new TypeError(`predicate was ${typeof predicate}; expected RegExp or function`);
     }
   }
-
   validateTokenList() {
     const tokenList = this.data.tokenList;
-
     if (tokenList && typeof tokenList !== 'object') {
       throw new TypeError(`tokenList was ${typeof tokenList}; expected object or RegExp`);
     }
   }
-
   validatePropertyConstraint() {
     const propertyConstraint = this.data.propertyConstraint;
-
     if (propertyConstraint && typeof propertyConstraint !== 'object') {
       throw new TypeError(`propertyConstraint was ${typeof propertyConstraint}; expected array or object`);
     }
   }
-
   validateElementConstraint() {
     const elementConstraint = this.data.elementConstraint;
-
     if (elementConstraint && typeof elementConstraint !== 'string') {
       throw new TypeError(`elementConstraint was ${typeof elementConstraint}; expected string`);
     }
   }
-
   validateExtends() {
     const extend = this.data.extends;
-
     if (extend && typeof extend !== 'string') {
       throw new TypeError(`extends was ${typeof extend}; expected string`);
     }
   }
-
   validate() {
     if (this.data === null || typeof this.data !== 'object') {
       throw new TypeError(`typeParser was ${typeof this.data}; expected object`);
     }
-
     this.validateDataType();
     this.validateParseType();
     this.validateTokenList();
@@ -1799,10 +1492,8 @@ class TypeParser {
     this.validateElementConstraint();
     this.validateExtends();
   }
-
   parseTokenList() {
     let tokenList = this.data.tokenList;
-
     if (!tokenList) {
       return [];
     } else if (tokenList instanceof RegExp) {
@@ -1810,23 +1501,17 @@ class TypeParser {
         token: tokenList
       };
     }
-
     const {
       token,
       split = /\s+/,
       trim = true,
       every = true
     } = tokenList;
-
     const trimInput = input => trim ? input.trim() : input;
-
     const testTokens = every ? 'every' : 'some';
-
     const predicate = input => trimInput(input).split(split)[testTokens](part => token.test(part));
-
     return [predicate];
   }
-
   parsePropertyConstraint() {
     const constraints = [].concat(this.data.propertyConstraint || []);
     return constraints.map(({
@@ -1835,27 +1520,22 @@ class TypeParser {
       value
     }) => {
       props = [].concat(props);
-
       switch (match) {
         case 'any':
         case 'some':
           return input => props.some(prop => prop in input && (!value || value(input[prop])));
-
         case 'none':
           return input => !props.some(prop => prop in input && (!value || value(input[prop])));
-
         case 'every':
         default:
           return input => props.every(prop => prop in input && (!value || value(input[prop])));
       }
     });
   }
-
   parseElementConstraint() {
     const constraint = this.data.elementConstraint;
     return !constraint ? [] : [input => input.every(entry => (0, _type.type)(entry) === constraint)];
   }
-
   parsePredicate() {
     if (this.data.predicate instanceof RegExp) {
       return [this.data.predicate.test.bind(this.data.predicate)];
@@ -1865,10 +1545,8 @@ class TypeParser {
       return [];
     }
   }
-
   getCombinedPredicate() {
     const predicates = [...this.parsePredicate(), ...this.parseTokenList(), ...this.parsePropertyConstraint(), ...this.parseElementConstraint()];
-
     if (predicates.length === 0) {
       return () => true;
     } else if (predicates.length === 1) {
@@ -1877,7 +1555,6 @@ class TypeParser {
       return input => predicates.every(predicate => predicate(input));
     }
   }
-
   getDataType() {
     if (this.data.dataType) {
       return this.data.dataType;
@@ -1891,23 +1568,17 @@ class TypeParser {
       return 'Primitive';
     }
   }
-
   get dataType() {
     return this.getDataType();
   }
-
   get predicate() {
     return this.getCombinedPredicate();
   }
-
   get extends() {
     return this.data.extends;
   }
-
 }
-
 exports.TypeParser = TypeParser;
-
 class DataParser {
   constructor(parser, {
     async
@@ -1915,166 +1586,131 @@ class DataParser {
     this.parser = parser;
     this.async = async;
   }
-
   validate() {
     const parser = this.parser;
-
     if (typeof parser !== 'function') {
       throw new TypeError(`parser was ${typeof parser}; expected function`);
     }
   }
-
 }
-
 exports.DataParser = DataParser;
-
 class FormatParser {
   constructor(format, parsers = {}) {
     this.format = format;
-
     if (parsers.parseType) {
       this.typeParser = new TypeParser(parsers.parseType);
     }
-
     if (parsers.parse) {
       this.dataParser = new DataParser(parsers.parse, {
         async: false
       });
     }
-
     if (parsers.parseAsync) {
       this.asyncDataParser = new DataParser(parsers.parseAsync, {
         async: true
       });
     }
   }
-
   validateFormat() {
     const format = this.format;
-
     if (!_type.typeMatcher.test(format)) {
       throw new TypeError(`format name was "${format}"; didn't match expected pattern`);
     }
   }
-
   validate() {
     this.validateFormat();
-
     if (this.typeParser) {
       this.typeParser.validate();
     }
-
     if (this.dataParser) {
       this.dataParser.validate();
     }
-
     if (this.asyncDataParser) {
       this.asyncDataParser.validate();
     }
   }
-
 }
-
 exports.FormatParser = FormatParser;
-},{"./type.js":32}],31:[function(require,module,exports){
+},{"./type.js":31}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.remove = exports.list = exports.has = exports.get = exports.add = void 0;
-
+exports.add = add;
+exports.get = get;
+exports.has = has;
+exports.list = list;
+exports.remove = remove;
 var _parser = require("./parser.js");
-
 var _type = require("./type.js");
-
 var _data = require("./data.js");
-
 const formats = {};
-
-const add = (format, parsers) => {
+function add(format, parsers) {
   const formatParser = new _parser.FormatParser(format, parsers);
   formatParser.validate();
   const index = formats[format] || (formats[format] = {});
-
   if (formatParser.typeParser) {
     (0, _type.addTypeParser)(format, formatParser.typeParser);
     index.type = true;
   }
-
   if (formatParser.dataParser) {
     (0, _data.addDataParser)(format, formatParser.dataParser);
     index.data = true;
   }
-
   if (formatParser.asyncDataParser) {
     (0, _data.addDataParser)(format, formatParser.asyncDataParser);
     index.asyncData = true;
   }
-
   if (parsers.outputs) {
     index.outputs = parsers.outputs;
   }
-};
-
-exports.add = add;
-
-const get = format => {
+}
+function get(format) {
   return formats[format];
-};
-
-exports.get = get;
-
-const remove = format => {
+}
+function remove(format) {
   const index = formats[format];
-
   if (!index) {
     return;
   }
-
   if (index.type) {
     (0, _type.removeTypeParser)(format);
   }
-
   if (index.data) {
     (0, _data.removeDataParser)(format);
   }
-
   if (index.asyncData) {
     (0, _data.removeDataParser)(format, true);
   }
-
   delete formats[format];
-};
-
-exports.remove = remove;
-
-const has = format => format in formats;
-
-exports.has = has;
-
-const list = () => Object.keys(formats);
-
-exports.list = list;
-},{"./data.js":26,"./parser.js":30,"./type.js":32}],32:[function(require,module,exports){
+}
+function has(format) {
+  return format in formats;
+}
+function list() {
+  return Object.keys(formats);
+}
+},{"./data.js":25,"./parser.js":29,"./type.js":31}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.typeMatcher = exports.type = exports.treeTypeParser = exports.removeTypeParser = exports.listTypeParser = exports.hasTypeParser = exports.addTypeParser = void 0;
-
+exports.addTypeParser = addTypeParser;
+exports.hasTypeParser = hasTypeParser;
+exports.listTypeParser = listTypeParser;
+exports.removeTypeParser = removeTypeParser;
+exports.treeTypeParser = treeTypeParser;
+exports.type = type;
+exports.typeMatcher = void 0;
 var _logger = _interopRequireDefault(require("../../logger.js"));
-
 var _dataType = require("./dataType.js");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 const types = {};
 const dataTypes = {};
 const unregExts = {};
-
-const parseNativeTypes = (input, dataType) => {
+function parseNativeTypes(input, dataType) {
   switch (dataType) {
     case 'Array':
       if (input.length === 0 || input.every(entry => type(entry) === '@csl/object')) {
@@ -2082,107 +1718,81 @@ const parseNativeTypes = (input, dataType) => {
       } else {
         return '@else/list+object';
       }
-
     case 'SimpleObject':
     case 'ComplexObject':
       return '@csl/object';
-
     default:
       return '@invalid';
   }
-};
-
-const matchType = (typeList = [], data) => {
+}
+function matchType(typeList = [], data) {
   for (const type of typeList) {
     if (types[type].predicate(data)) {
       return matchType(types[type].extensions, data) || type;
     }
   }
-};
-
-const type = input => {
+}
+function type(input) {
   const dataType = (0, _dataType.dataTypeOf)(input);
-
   if (dataType === 'Array' && input.length === 0) {
     return parseNativeTypes(input, dataType);
   }
-
   const match = matchType(dataTypes[dataType], input);
   return match || parseNativeTypes(input, dataType);
-};
-
-exports.type = type;
-
-const addTypeParser = (format, {
+}
+function addTypeParser(format, {
   dataType,
   predicate,
   extends: extend
-}) => {
+}) {
   let extensions = [];
-
   if (format in unregExts) {
     extensions = unregExts[format];
     delete unregExts[format];
-
     _logger.default.debug('[core]', `Subclasses "${extensions}" finally registered to parent type "${format}"`);
   }
-
   const object = {
     predicate,
     extensions
   };
   types[format] = object;
-
   if (extend) {
     const parentTypeParser = types[extend];
-
     if (parentTypeParser) {
       parentTypeParser.extensions.push(format);
     } else {
       if (!unregExts[extend]) {
         unregExts[extend] = [];
       }
-
       unregExts[extend].push(format);
-
       _logger.default.debug('[core]', `Subclass "${format}" is waiting on parent type "${extend}"`);
     }
   } else {
     const typeList = dataTypes[dataType] || (dataTypes[dataType] = []);
     typeList.push(format);
   }
-};
-
-exports.addTypeParser = addTypeParser;
-
-const hasTypeParser = type => Object.prototype.hasOwnProperty.call(types, type);
-
-exports.hasTypeParser = hasTypeParser;
-
-const removeTypeParser = type => {
+}
+function hasTypeParser(type) {
+  return Object.prototype.hasOwnProperty.call(types, type);
+}
+function removeTypeParser(type) {
   delete types[type];
   const typeLists = [...Object.keys(dataTypes).map(key => dataTypes[key]), ...Object.keys(types).map(type => types[type].extensions).filter(list => list.length > 0)];
   typeLists.forEach(typeList => {
     const index = typeList.indexOf(type);
-
     if (index > -1) {
       typeList.splice(index, 1);
     }
   });
-};
-
-exports.removeTypeParser = removeTypeParser;
-
-const listTypeParser = () => Object.keys(types);
-
-exports.listTypeParser = listTypeParser;
-
-const treeTypeParser = () => {
+}
+function listTypeParser() {
+  return Object.keys(types);
+}
+function treeTypeParser() {
   const attachNode = name => ({
     name,
     children: types[name].extensions.map(attachNode)
   });
-
   return {
     name: 'Type tree',
     children: Object.keys(dataTypes).map(name => ({
@@ -2190,69 +1800,91 @@ const treeTypeParser = () => {
       children: dataTypes[name].map(attachNode)
     }))
   };
-};
-
-exports.treeTypeParser = treeTypeParser;
-const typeMatcher = /^(?:@(.+?))(?:\/(?:(.+?)\+)?(?:(.+)))?$/;
-exports.typeMatcher = typeMatcher;
-},{"../../logger.js":10,"./dataType.js":27}],33:[function(require,module,exports){
+}
+const typeMatcher = exports.typeMatcher = /^(?:@(.+?))(?:\/(?:(.+?)\+)?(?:(.+)))?$/;
+},{"../../logger.js":10,"./dataType.js":26}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.remove = exports.register = exports.list = exports.has = exports.format = exports.add = void 0;
-
+exports.add = add;
+exports.format = format;
+exports.has = has;
+exports.list = list;
+exports.register = void 0;
+exports.remove = remove;
 var _register = _interopRequireDefault(require("../util/register.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const validate = (name, formatter) => {
+function validate(name, formatter) {
   if (typeof name !== 'string') {
     throw new TypeError(`Invalid output format name, expected string, got ${typeof name}`);
   } else if (typeof formatter !== 'function') {
     throw new TypeError(`Invalid formatter, expected function, got ${typeof formatter}`);
   }
-};
-
-const register = new _register.default();
-exports.register = register;
-
-const add = (name, formatter) => {
+}
+const register = exports.register = new _register.default();
+function add(name, formatter) {
   validate(name, formatter);
   register.set(name, formatter);
-};
-
-exports.add = add;
-
-const remove = name => {
+}
+function remove(name) {
   register.remove(name);
-};
-
-exports.remove = remove;
-
-const has = name => {
+}
+function has(name) {
   return register.has(name);
-};
-
-exports.has = has;
-
-const list = () => {
+}
+function list() {
   return register.list();
-};
-
-exports.list = list;
-
-const format = (name, data, ...options) => {
+}
+function format(name, data, ...options) {
   if (!register.has(name)) {
     throw new Error(`Output format "${name}" unavailable`);
   }
-
   return register.get(name)(data, ...options);
-};
+}
+},{"../util/register.js":39}],33:[function(require,module,exports){
+"use strict";
 
-exports.format = format;
-},{"../util/register.js":39}],34:[function(require,module,exports){
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.downgradeCsl = downgradeCsl;
+exports.upgradeCsl = upgradeCsl;
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function upgradeCsl(item) {
+  if (Array.isArray(item)) {
+    return item.map(upgradeCsl);
+  }
+  item = _objectSpread({}, item);
+  if ('event' in item) {
+    item['event-title'] = item.event;
+    delete item.event;
+  }
+  if (item.type === 'book' && 'version' in item) {
+    item.type = 'software';
+  }
+  return item;
+}
+function downgradeCsl(item) {
+  if (Array.isArray(item)) {
+    return item.map(downgradeCsl);
+  }
+  item = _objectSpread({}, item);
+  if ('event-title' in item) {
+    item.event = item['event-title'];
+    delete item['event-title'];
+  }
+  if (item.type === 'software') {
+    item.type = 'book';
+  }
+  return item;
+}
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2260,37 +1892,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.deepCopy = deepCopy;
 exports.default = void 0;
-
 function deepCopy(value, seen = new Set()) {
   if (typeof value !== 'object' || value === null || value.constructor !== Object && value.constructor !== Array) {
     return value;
   }
-
   if (seen.has(value)) {
     throw new TypeError('Recursively copying circular structure');
   }
-
   seen.add(value);
   let copy;
-
   if (value.constructor === Array) {
     copy = value.map(value => deepCopy(value, seen));
   } else {
     const object = {};
-
     for (const key in value) {
       object[key] = deepCopy(value[key], seen);
     }
-
     copy = object;
   }
-
   seen.delete(value);
   return copy;
 }
-
-var _default = deepCopy;
-exports.default = _default;
+var _default = exports.default = deepCopy;
 },{}],35:[function(require,module,exports){
 (function (process){(function (){
 "use strict";
@@ -2302,31 +1925,31 @@ exports.default = void 0;
 exports.fetchFile = fetchFile;
 exports.fetchFileAsync = fetchFileAsync;
 exports.setUserAgent = setUserAgent;
-
 var _syncFetch = _interopRequireDefault(require("sync-fetch"));
-
-require("isomorphic-fetch");
-
+var _fetchPonyfill = _interopRequireDefault(require("fetch-ponyfill"));
 var _logger = _interopRequireDefault(require("../logger.js"));
-
 var _package = _interopRequireDefault(require("../../package.json"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const corsEnabled = typeof location !== 'undefined' && typeof document !== 'undefined';
-let userAgent = `Citation.js/${_package.default.version} Node.js/${process.version}`;
-
+const isBrowser = typeof location !== 'undefined' && typeof navigator !== 'undefined';
+const {
+  fetch: asyncFetch,
+  Headers: asyncHeaders
+} = typeof fetch === 'function' && isBrowser ? {
+  fetch,
+  Headers
+} : (0, _fetchPonyfill.default)();
+let userAgent = `Citation.js/${_package.default.version}`;
+if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node' && process.version) {
+  userAgent += ` Node.js/${process.version}`;
+}
 function normaliseHeaders(headers) {
   const result = {};
-  const entries = headers instanceof Headers || headers instanceof _syncFetch.default.Headers ? Array.from(headers) : Object.entries(headers);
-
+  const entries = headers instanceof asyncHeaders || headers instanceof _syncFetch.default.Headers ? Array.from(headers) : Object.entries(headers);
   for (const [name, header] of entries) {
     result[name.toLowerCase()] = header.toString();
   }
-
   return result;
 }
-
 function parseOpts(opts = {}) {
   const reqOpts = {
     headers: {
@@ -2335,101 +1958,77 @@ function parseOpts(opts = {}) {
     method: 'GET',
     checkContentType: opts.checkContentType
   };
-
-  if (userAgent && !corsEnabled) {
+  if (userAgent && !isBrowser) {
     reqOpts.headers['user-agent'] = userAgent;
   }
-
   if (opts.body) {
     reqOpts.method = 'POST';
     const isJson = typeof opts.body !== 'string';
     reqOpts.body = isJson ? JSON.stringify(opts.body) : opts.body;
     reqOpts.headers['content-type'] = isJson ? 'application/json' : 'text/plain';
   }
-
   if (opts.headers) {
     Object.assign(reqOpts.headers, normaliseHeaders(opts.headers));
   }
-
   return reqOpts;
 }
-
 function sameType(request, response) {
   if (!request.accept || request.accept === '*/*' || !response['content-type']) {
     return true;
   }
-
   const [a, b] = response['content-type'].split(';')[0].trim().split('/');
   return request.accept.split(',').map(type => type.split(';')[0].trim().split('/')).some(([c, d]) => (c === a || c === '*') && (d === b || d === '*'));
 }
-
 function checkResponse(response, opts) {
   const {
     status,
     headers
   } = response;
   let error;
-
   if (status >= 400) {
     error = new Error(`Server responded with status code ${status}`);
   } else if (opts.checkContentType === true && !sameType(opts.headers, normaliseHeaders(headers))) {
     error = new Error(`Server responded with content-type ${headers.get('content-type')}`);
   }
-
   if (error) {
     error.status = status;
     error.headers = headers;
     error.body = response.body;
     throw error;
   }
-
   return response;
 }
-
 function fetchFile(url, opts) {
   const reqOpts = parseOpts(opts);
-
   _logger.default.http('[core]', reqOpts.method, url, reqOpts);
-
   const response = checkResponse((0, _syncFetch.default)(url, reqOpts), reqOpts);
   return response.text();
 }
-
 async function fetchFileAsync(url, opts) {
   const reqOpts = parseOpts(opts);
-
   _logger.default.http('[core]', reqOpts.method, url, reqOpts);
-
-  return fetch(url, reqOpts).then(response => checkResponse(response, reqOpts)).then(response => response.text());
+  return asyncFetch(url, reqOpts).then(response => checkResponse(response, reqOpts)).then(response => response.text());
 }
-
 function setUserAgent(newUserAgent) {
   userAgent = newUserAgent;
 }
-
-var _default = fetchFile;
-exports.default = _default;
+var _default = exports.default = fetchFile;
 }).call(this)}).call(this,require('_process'))
-},{"../../package.json":42,"../logger.js":10,"_process":65,"isomorphic-fetch":64,"sync-fetch":66}],36:[function(require,module,exports){
+},{"../../package.json":42,"../logger.js":10,"_process":64,"fetch-ponyfill":62,"sync-fetch":65}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
-const fetchId = function (list, prefix) {
+function fetchId(list, prefix) {
   let id;
-
   while (id === undefined || list.includes(id)) {
     id = `${prefix}${Math.random().toString().slice(2)}`;
   }
-
   return id;
-};
-
-var _default = fetchId;
-exports.default = _default;
+}
+var _default = exports.default = fetchId;
 },{}],37:[function(require,module,exports){
 "use strict";
 
@@ -2437,9 +2036,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Grammar = void 0;
-
 var _deepCopy = require("./deepCopy.js");
-
 class Grammar {
   constructor(rules, state) {
     this.rules = rules;
@@ -2447,7 +2044,6 @@ class Grammar {
     this.mainRule = Object.keys(rules)[0];
     this.log = [];
   }
-
   parse(iterator, mainRule) {
     this.lexer = iterator;
     this.token = this.lexer.next();
@@ -2455,18 +2051,14 @@ class Grammar {
     this.log = [];
     return this.consumeRule(mainRule || this.mainRule);
   }
-
   matchEndOfFile() {
     return !this.token;
   }
-
   matchToken(type) {
     return this.token && type === this.token.type;
   }
-
   consumeToken(type, optional) {
     const token = this.token;
-
     if (!type || token && token.type === type) {
       this.token = this.lexer.next();
       return token;
@@ -2479,16 +2071,13 @@ class Grammar {
       throw error;
     }
   }
-
   consumeRule(rule) {
     this.log.push(rule);
     const result = this.rules[rule].call(this);
     this.log.pop();
     return result;
   }
-
 }
-
 exports.Grammar = Grammar;
 },{"./deepCopy.js":34}],38:[function(require,module,exports){
 "use strict";
@@ -2526,6 +2115,12 @@ Object.defineProperty(exports, "deepCopy", {
     return _deepCopy.default;
   }
 });
+Object.defineProperty(exports, "downgradeCsl", {
+  enumerable: true,
+  get: function () {
+    return _csl.downgradeCsl;
+  }
+});
 Object.defineProperty(exports, "fetchFile", {
   enumerable: true,
   get: function () {
@@ -2550,69 +2145,57 @@ Object.defineProperty(exports, "setUserAgent", {
     return _fetchFile.setUserAgent;
   }
 });
-
+Object.defineProperty(exports, "upgradeCsl", {
+  enumerable: true,
+  get: function () {
+    return _csl.upgradeCsl;
+  }
+});
+var _csl = require("./csl.js");
 var _deepCopy = _interopRequireDefault(require("./deepCopy.js"));
-
 var _fetchFile = require("./fetchFile.js");
-
 var _fetchId = _interopRequireDefault(require("./fetchId.js"));
-
 var _stack = _interopRequireDefault(require("./stack.js"));
-
 var _register = _interopRequireDefault(require("./register.js"));
-
 var _grammar = require("./grammar.js");
-
 var _translator = require("./translator.js");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./deepCopy.js":34,"./fetchFile.js":35,"./fetchId.js":36,"./grammar.js":37,"./register.js":39,"./stack.js":40,"./translator.js":41}],39:[function(require,module,exports){
+},{"./csl.js":33,"./deepCopy.js":34,"./fetchFile.js":35,"./fetchId.js":36,"./grammar.js":37,"./register.js":39,"./stack.js":40,"./translator.js":41}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 class Register {
   constructor(data = {}) {
     this.data = data;
   }
-
   set(key, value) {
     this.data[key] = value;
     return this;
   }
-
   add(...args) {
     return this.set(...args);
   }
-
   delete(key) {
     delete this.data[key];
     return this;
   }
-
   remove(...args) {
     return this.delete(...args);
   }
-
   get(key) {
     return this.data[key];
   }
-
   has(key) {
     return Object.prototype.hasOwnProperty.call(this.data, key);
   }
-
   list() {
     return Object.keys(this.data);
   }
-
 }
-
-var _default = Register;
-exports.default = _default;
+var _default = exports.default = Register;
 },{}],40:[function(require,module,exports){
 "use strict";
 
@@ -2620,18 +2203,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 class TokenStack {
   constructor(array) {
     this.stack = array;
     this.index = 0;
     this.current = this.stack[this.index];
   }
-
   static getPatternText(pattern) {
     return `"${pattern instanceof RegExp ? pattern.source : pattern}"`;
   }
-
   static getMatchCallback(pattern) {
     if (Array.isArray(pattern)) {
       const matches = pattern.map(TokenStack.getMatchCallback);
@@ -2644,20 +2224,16 @@ class TokenStack {
       return token => pattern === token;
     }
   }
-
   tokensLeft() {
     return this.stack.length - this.index;
   }
-
   matches(pattern) {
     return TokenStack.getMatchCallback(pattern)(this.current, this.index, this.stack);
   }
-
   matchesSequence(sequence) {
     const part = this.stack.slice(this.index, this.index + sequence.length).join('');
     return typeof sequence === 'string' ? part === sequence : sequence.every((pattern, index) => TokenStack.getMatchCallback(pattern)(part[index]));
   }
-
   consumeToken(pattern = /^[\s\S]$/, {
     inverse = false,
     spaced = true
@@ -2665,23 +2241,18 @@ class TokenStack {
     if (spaced) {
       this.consumeWhitespace();
     }
-
     const token = this.current;
     const match = TokenStack.getMatchCallback(pattern)(token, this.index, this.stack);
-
     if (match) {
       this.current = this.stack[++this.index];
     } else {
       throw new SyntaxError(`Unexpected token at index ${this.index}: Expected ${TokenStack.getPatternText(pattern)}, got "${token}"`);
     }
-
     if (spaced) {
       this.consumeWhitespace();
     }
-
     return token;
   }
-
   consumeWhitespace(pattern = /^\s$/, {
     optional = true
   } = {}) {
@@ -2689,21 +2260,16 @@ class TokenStack {
       min: +!optional
     });
   }
-
   consumeN(length) {
     if (this.tokensLeft() < length) {
       throw new SyntaxError('Not enough tokens left');
     }
-
     const start = this.index;
-
     while (length--) {
       this.current = this.stack[++this.index];
     }
-
     return this.stack.slice(start, this.index).join('');
   }
-
   consumeSequence(sequence) {
     if (this.matchesSequence(sequence)) {
       return this.consumeN(sequence.length);
@@ -2711,7 +2277,6 @@ class TokenStack {
       throw new SyntaxError(`Expected "${sequence}", got "${this.consumeN(sequence.length)}"`);
     }
   }
-
   consume(pattern = /^[\s\S]$/, {
     min = 0,
     max = Infinity,
@@ -2721,34 +2286,25 @@ class TokenStack {
   } = {}) {
     const start = this.index;
     const match = TokenStack.getMatchCallback(pattern);
-
     while (match(this.current, this.index, this.stack) !== inverse) {
       this.current = this.stack[++this.index];
     }
-
     let consumed = this.stack.slice(start, this.index);
-
     if (consumed.length < min) {
       throw new SyntaxError(`Not enough ${TokenStack.getPatternText(pattern)}`);
     } else if (consumed.length > max) {
       throw new SyntaxError(`Too many ${TokenStack.getPatternText(pattern)}`);
     }
-
     if (tokenMap) {
       consumed = consumed.map(tokenMap);
     }
-
     if (tokenFilter) {
       consumed = consumed.filter(tokenFilter);
     }
-
     return consumed.join('');
   }
-
 }
-
-var _default = TokenStack;
-exports.default = _default;
+var _default = exports.default = TokenStack;
 },{}],41:[function(require,module,exports){
 "use strict";
 
@@ -2756,16 +2312,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Translator = void 0;
-
 function createConditionEval(condition) {
   return function conditionEval(input) {
     if (typeof condition === 'boolean') {
       return condition;
     }
-
     return Object.keys(condition).every(prop => {
       const value = condition[prop];
-
       if (value === true) {
         return prop in input;
       } else if (value === false) {
@@ -2780,26 +2333,21 @@ function createConditionEval(condition) {
     });
   };
 }
-
 function parsePropStatement(prop, toSource) {
   let inputProp;
   let outputProp;
   let convert;
   let condition;
-
   if (typeof prop === 'string') {
     inputProp = outputProp = prop;
   } else if (prop) {
     inputProp = toSource ? prop.target : prop.source;
     outputProp = toSource ? prop.source : prop.target;
-
     if (prop.convert) {
       convert = toSource ? prop.convert.toSource : prop.convert.toTarget;
     }
-
     if (prop.when) {
       condition = toSource ? prop.when.target : prop.when.source;
-
       if (condition != null) {
         condition = createConditionEval(condition);
       }
@@ -2807,7 +2355,6 @@ function parsePropStatement(prop, toSource) {
   } else {
     return null;
   }
-
   inputProp = [].concat(inputProp).filter(Boolean);
   outputProp = [].concat(outputProp).filter(Boolean);
   return {
@@ -2817,13 +2364,11 @@ function parsePropStatement(prop, toSource) {
     condition
   };
 }
-
 function createConverter(props, toSource) {
   toSource = toSource === Translator.CONVERT_TO_SOURCE;
   props = props.map(prop => parsePropStatement(prop, toSource)).filter(Boolean);
   return function converter(input) {
     const output = {};
-
     for (const {
       inputProp,
       outputProp,
@@ -2837,9 +2382,7 @@ function createConverter(props, toSource) {
       } else if (inputProp.length !== 0 && inputProp.every(prop => !(prop in input))) {
         continue;
       }
-
       let outputData = inputProp.map(prop => input[prop]);
-
       if (convert) {
         try {
           const converted = convert.apply(input, outputData);
@@ -2850,35 +2393,29 @@ function createConverter(props, toSource) {
           });
         }
       }
-
       outputProp.forEach((prop, index) => {
         const value = outputData[index];
-
         if (value !== undefined) {
           output[prop] = value;
         }
       });
     }
-
     return output;
   };
 }
-
 class Translator {
   constructor(props) {
     this.convertToSource = createConverter(props, Translator.CONVERT_TO_SOURCE);
     this.convertToTarget = createConverter(props, Translator.CONVERT_TO_TARGET);
   }
-
 }
-
 exports.Translator = Translator;
 Translator.CONVERT_TO_SOURCE = Symbol('convert to source');
 Translator.CONVERT_TO_TARGET = Symbol('convert to target');
 },{}],42:[function(require,module,exports){
 module.exports={
   "name": "@citation-js/core",
-  "version": "0.5.4",
+  "version": "0.7.14",
   "description": "Convert different bibliographic metadata sources",
   "keywords": [
     "citation-js",
@@ -2894,12 +2431,16 @@ module.exports={
     "test": "__tests__"
   },
   "homepage": "https://citation.js.org/",
-  "repository": "https://github.com/citation-js/citation-js/tree/master/packages/core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/citation-js/citation-js.git",
+    "directory": "packages/core"
+  },
   "bugs": {
     "url": "https://github.com/citation-js/citation-js/issues"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=16.0.0"
   },
   "files": [
     "lib",
@@ -2911,13 +2452,10 @@ module.exports={
   "dependencies": {
     "@citation-js/date": "^0.5.0",
     "@citation-js/name": "^0.4.2",
-    "isomorphic-fetch": "^3.0.0",
-    "sync-fetch": "^0.3.0"
+    "fetch-ponyfill": "^7.1.0",
+    "sync-fetch": "^0.4.1"
   },
-  "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1"
-  },
-  "gitHead": "bd67972fd6078b646d4aac84a5fda9bdd9433122"
+  "gitHead": "1e5f61227c10efc8387ef55816a8d8cf224471f5"
 }
 
 },{}],43:[function(require,module,exports){
@@ -2926,16 +2464,16 @@ module.exports={
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "parse", {
-  enumerable: true,
-  get: function get() {
-    return _input.default;
-  }
-});
 Object.defineProperty(exports, "format", {
   enumerable: true,
   get: function get() {
     return _output.default;
+  }
+});
+Object.defineProperty(exports, "parse", {
+  enumerable: true,
+  get: function get() {
+    return _input.default;
   }
 });
 
@@ -2960,7 +2498,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]); if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -2978,7 +2516,8 @@ const monthMap = {
   nov: 11,
   dec: 12
 };
-const dateRangeDelimiters = / (?:to|[-/]) | ?(?:--|[–—]) ?|(?<=\d{4}-\d{2}-\d{2})\/(?=\d{4}-\d{2}-\d{2})/;
+const dateRangeDelimiters = / (?:to|[-/]) | ?(?:--|[–—]) ?/;
+const dateRangePattern = /^(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})$/;
 
 function getMonth(monthName) {
   return monthMap[monthName.toLowerCase().slice(0, 3)];
@@ -3152,9 +2691,17 @@ function parseDateParts(value) {
   return dateParts && dateParts.map(string => parseInt(string));
 }
 
+function splitDateRange(range) {
+  if (dateRangePattern.test(range)) {
+    return range.match(dateRangePattern).slice(1, 3);
+  } else {
+    return range.split(dateRangeDelimiters);
+  }
+}
+
 function parseDate(rangeStart, rangeEnd) {
   const range = [];
-  const rangeStartAsRange = typeof rangeStart === 'string' && rangeStart.split(dateRangeDelimiters);
+  const rangeStartAsRange = typeof rangeStart === 'string' && splitDateRange(rangeStart);
 
   if (rangeEnd) {
     range.push(rangeStart, rangeEnd);
@@ -3224,8 +2771,30 @@ const getDate = function getDate(date, delimiter = '-') {
 var _default = getDate;
 exports.default = _default;
 },{}],46:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"./input":47,"./output":48,"dup":43}],47:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "parse", {
+  enumerable: true,
+  get: function get() {
+    return _input.default;
+  }
+});
+Object.defineProperty(exports, "format", {
+  enumerable: true,
+  get: function get() {
+    return _output.default;
+  }
+});
+
+var _input = _interopRequireDefault(require("./input"));
+
+var _output = _interopRequireDefault(require("./output"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+},{"./input":47,"./output":48}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3360,38 +2929,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parse = parseDoiApi;
 exports.parseAsync = parseDoiApiAsync;
-
 var _core = require("@citation-js/core");
-
 var _json = _interopRequireDefault(require("./json.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const apiOptions = {
   checkContentType: true,
   headers: {
     Accept: 'application/vnd.citationstyles.csl+json'
   }
 };
-
-async function fetchDoiApiAsync(url) {
-  const result = await _core.util.fetchFileAsync(url, apiOptions);
-  return result === '[]' ? {} : JSON.parse(result);
+function processApiResponse(response) {
+  if (response === '[]') {
+    return {};
+  }
+  return (0, _json.default)(JSON.parse(response));
 }
-
-async function parseDoiApiAsync(data) {
-  const doiJsonList = await Promise.all([].concat(data).map(fetchDoiApiAsync));
-  return doiJsonList.map(_json.default);
+function parseDoiApiAsync(data) {
+  const response = [].concat(data).map(url => _core.util.fetchFileAsync(url, apiOptions).then(processApiResponse));
+  return Promise.all(response);
 }
-
-function fetchDoiApi(url) {
-  const result = _core.util.fetchFile(url, apiOptions);
-
-  return result === '[]' ? {} : JSON.parse(result);
-}
-
 function parseDoiApi(data) {
-  return [].concat(data).map(fetchDoiApi).map(_json.default);
+  const response = [].concat(data).map(url => _core.util.fetchFile(url, apiOptions)).map(processApiResponse);
+  return response;
 }
 },{"./json.js":52,"@citation-js/core":"citation-js"}],50:[function(require,module,exports){
 "use strict";
@@ -3400,7 +2959,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = exports.parse = parseDoi;
-
 function parseDoi(data) {
   const list = Array.isArray(data) ? data : data.trim().split(/(?:\s+)/g);
   return list.map(doi => `https://doi.org/${doi}`);
@@ -3412,52 +2970,51 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ref = exports.parsers = exports.formats = void 0;
-
 var _core = require("@citation-js/core");
-
 var id = _interopRequireWildcard(require("./id.js"));
-
 var api = _interopRequireWildcard(require("./api.js"));
-
 var json = _interopRequireWildcard(require("./json.js"));
-
 var type = _interopRequireWildcard(require("./type.js"));
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const ref = '@doi';
-exports.ref = ref;
-const parsers = {
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+const ref = exports.ref = '@doi';
+const parsers = exports.parsers = {
   id,
   api,
   json,
   type
 };
-exports.parsers = parsers;
-const formats = {
+const formats = exports.formats = {
   '@doi/api': {
     parse: api.parse,
     parseAsync: api.parseAsync,
     parseType: {
       dataType: 'String',
-      predicate: /^\s*(https?:\/\/(?:dx\.)?doi\.org\/(10.\d{4,9}\/[-._;()/:A-Z0-9]+))\s*$/i,
+      predicate: /^\s*(https?:\/\/(?:dx\.)?doi\.org\/(10.\d{4,9}\/[-._;()/:A-Z0-9[\]<>]+))\s*$/i,
       extends: '@else/url'
+    }
+  },
+  '@doi/short-url': {
+    parse: function (url) {
+      return url.replace(/^(\s*)/, '$1https://');
+    },
+    parseType: {
+      dataType: 'String',
+      predicate: /^\s*((?:dx\.)?doi\.org\/(10.\d{4,9}\/[-._;()/:A-Z0-9[\]<>]+))\s*$/i
     }
   },
   '@doi/id': {
     parse: id.parse,
     parseType: {
       dataType: 'String',
-      predicate: /^\s*(10.\d{4,9}\/[-._;()/:A-Z0-9]+)\s*$/i
+      predicate: /^\s*(10.\d{4,9}\/[-._;()/:A-Z0-9[\]<>]+)\s*$/i
     }
   },
   '@doi/list+text': {
     parse: id.parse,
     parseType: {
       dataType: 'String',
-      tokenList: /^10.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
+      tokenList: /^10.\d{4,9}\/[-._;()/:A-Z0-9[\]<>]+$/i
     }
   },
   '@doi/list+object': {
@@ -3471,8 +3028,6 @@ const formats = {
     parse: type.parse
   }
 };
-exports.formats = formats;
-
 _core.plugins.add(ref, {
   input: formats
 });
@@ -3483,11 +3038,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = exports.parse = parseDoiJson;
-
 var _type = _interopRequireDefault(require("./type.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function parseDoiJson(data) {
   const res = {
     type: (0, _type.default)(data.type, data)
@@ -3495,11 +3047,13 @@ function parseDoiJson(data) {
   const dateFields = ['submitted', 'issued', 'event-date', 'original-date', 'container', 'accessed'];
   dateFields.forEach(field => {
     const value = data[field];
-
     if (value && value['date-parts'] && typeof value['date-parts'][0] === 'number') {
       value['date-parts'] = [value['date-parts']];
     }
   });
+  if (data.type === 'dissertation' && !data.genre) {
+    res.genre = 'Doctoral dissertation';
+  }
   return Object.assign({}, data, res);
 }
 },{"./type.js":53}],53:[function(require,module,exports){
@@ -3513,14 +3067,13 @@ const doiTypes = {
   'journal-article': 'article-journal',
   'book-chapter': 'chapter',
   'posted-content': 'manuscript',
-  'proceedings-article': 'paper-conference'
+  'proceedings-article': 'paper-conference',
+  dissertation: 'thesis'
 };
-
 function fetchDoiType(value, data) {
   if (value === 'posted-content' && data.subtype === 'preprint') {
     return 'article';
   }
-
   return doiTypes[value] || value;
 }
 },{}],54:[function(require,module,exports){
@@ -3529,20 +3082,14 @@ function fetchDoiType(value, data) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parse = parse;
-exports.format = format;
 exports.GOOGLE_BOOKS_API_VERSION = void 0;
-
+exports.format = format;
+exports.parse = parse;
 var _core = require("@citation-js/core");
-
 var name = _interopRequireWildcard(require("@citation-js/name"));
-
 var date = _interopRequireWildcard(require("@citation-js/date"));
-
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
 const GOOGLE_PROPS = [{
   source: 'printType',
   target: 'type',
@@ -3553,7 +3100,6 @@ const GOOGLE_PROPS = [{
         MAGAZINE: 'article-magazine'
       }[type];
     },
-
     toSource(type) {
       if (type.slice(0, 7) === 'article') {
         return 'MAGAZINE';
@@ -3561,7 +3107,6 @@ const GOOGLE_PROPS = [{
         return 'BOOK';
       }
     }
-
   }
 }, {
   source: 'authors',
@@ -3570,11 +3115,9 @@ const GOOGLE_PROPS = [{
     toTarget(authors) {
       return authors.map(name.parse);
     },
-
     toSource(authors) {
       return authors.map(name.format);
     }
-
   }
 }, {
   source: 'canonicalVolumeLink',
@@ -3586,11 +3129,9 @@ const GOOGLE_PROPS = [{
     toTarget(array) {
       return array.join(',');
     },
-
     toSource(list) {
       return list.split(',');
     }
-
   }
 }, {
   source: 'description',
@@ -3606,9 +3147,7 @@ const GOOGLE_PROPS = [{
     }) {
       return `${height} x ${width} x ${thickness} cm`;
     },
-
     toSource(list) {}
-
   }
 }, {
   source: 'industryIdentifiers',
@@ -3619,7 +3158,6 @@ const GOOGLE_PROPS = [{
         type
       }) => type === id) || {}).identifier);
     },
-
     toSource(isbn, issn, ...other) {
       return [isbn && {
         type: isbn.length === 13 ? 'ISBN_13' : 'ISBN_10',
@@ -3632,7 +3170,6 @@ const GOOGLE_PROPS = [{
         identifier
       }))].filter(Boolean);
     }
-
   }
 }, 'language', {
   source: 'pageCount',
@@ -3646,15 +3183,15 @@ const GOOGLE_PROPS = [{
   }
 }];
 const translator = new _core.util.Translator(GOOGLE_PROPS);
-
 function parse(volume) {
   if (volume.volumeInfo.language === 'un') {
     delete volume.volumeInfo.language;
   }
-
+  if (volume.volumeInfo.pageCount === 0) {
+    delete volume.volumeInfo.pageCount;
+  }
   return translator.convertToTarget(volume.volumeInfo);
 }
-
 function format(records) {
   return {
     kind: 'books#volumes',
@@ -3662,16 +3199,13 @@ function format(records) {
     items: records.map(translator.convertToSource)
   };
 }
-
 const GOOGLE_BOOKS_API_VERSION = 'v1';
 exports.GOOGLE_BOOKS_API_VERSION = GOOGLE_BOOKS_API_VERSION;
 },{"@citation-js/core":"citation-js","@citation-js/date":43,"@citation-js/name":46}],55:[function(require,module,exports){
 "use strict";
 
 var _core = require("@citation-js/core");
-
 var _input = require("./input");
-
 _core.plugins.add(_input.ref, {
   input: _input.formats
 });
@@ -3681,53 +3215,34 @@ _core.plugins.add(_input.ref, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.formats = exports.ref = void 0;
-
+exports.ref = exports.formats = void 0;
 var _core = require("@citation-js/core");
-
 var google = _interopRequireWildcard(require("./google-books.js"));
-
 var ol = _interopRequireWildcard(require("./open-library.js"));
-
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArrayLimit(arr, i) { var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]); if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-
 function getUrls(isbn) {
   isbn = isbn.replace(/-/g, '');
   return [[`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`, json => json.totalItems], [`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`, json => Object.keys(json).length]];
 }
-
 function getResponse(isbn) {
   var _iterator = _createForOfIteratorHelper(getUrls(isbn)),
-      _step;
-
+    _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       const _step$value = _slicedToArray(_step.value, 2),
-            url = _step$value[0],
-            check = _step$value[1];
-
+        url = _step$value[0],
+        check = _step$value[1];
       const json = JSON.parse(_core.util.fetchFile(url));
-
       if (check(json)) {
         return json;
       }
@@ -3737,27 +3252,21 @@ function getResponse(isbn) {
   } finally {
     _iterator.f();
   }
-
   throw new Error(`Cannot find resource for ISBN: ${isbn}`);
 }
-
-function getResponseAsync(_x) {
+function getResponseAsync(_x2) {
   return _getResponseAsync.apply(this, arguments);
 }
-
 function _getResponseAsync() {
   _getResponseAsync = _asyncToGenerator(function* (isbn) {
     var _iterator2 = _createForOfIteratorHelper(getUrls(isbn)),
-        _step2;
-
+      _step2;
     try {
       for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         const _step2$value = _slicedToArray(_step2.value, 2),
-              url = _step2$value[0],
-              check = _step2$value[1];
-
+          url = _step2$value[0],
+          check = _step2$value[1];
         const json = JSON.parse(yield _core.util.fetchFileAsync(url));
-
         if (check(json)) {
           return json;
         }
@@ -3767,12 +3276,10 @@ function _getResponseAsync() {
     } finally {
       _iterator2.f();
     }
-
     throw new Error(`Cannot find resource for ISBN: ${isbn}`);
   });
   return _getResponseAsync.apply(this, arguments);
 }
-
 const ref = '@isbn';
 exports.ref = ref;
 const formats = {
@@ -3781,11 +3288,9 @@ const formats = {
     parseAsync: getResponseAsync,
     parseType: {
       dataType: 'String',
-
       predicate(id) {
         return /^\d{10}$/.test(id.replace(/-/g, ''));
       }
-
     }
   },
   '@isbn/isbn-13': {
@@ -3793,11 +3298,9 @@ const formats = {
     parseAsync: getResponseAsync,
     parseType: {
       dataType: 'String',
-
       predicate(id) {
         return /^(978|979)\d{10}$/.test(id.replace(/-/g, ''));
       }
-
     }
   },
   '@isbn/isbn-a': {
@@ -3820,7 +3323,6 @@ const formats = {
     parse(record) {
       return record.items;
     },
-
     parseType: {
       dataType: 'SimpleObject',
       propertyConstraint: [{
@@ -3848,11 +3350,9 @@ const formats = {
     parse: ol.parse,
     parseType: {
       dataType: 'SimpleObject',
-
       predicate(response) {
         return Object.keys(response).every(key => key.slice(0, 5) === 'ISBN:');
       }
-
     },
     outputs: '@csl/list+object'
   }
@@ -3864,25 +3364,16 @@ exports.formats = formats;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parse = parse;
 exports.format = format;
-
+exports.parse = parse;
 var _core = require("@citation-js/core");
-
 var name = _interopRequireWildcard(require("@citation-js/name"));
-
 var date = _interopRequireWildcard(require("@citation-js/date"));
-
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-
 const CONVERT_ARRAY_OF_OBJECTS = {
   toTarget: ([{
     name
@@ -3910,7 +3401,6 @@ const OL_PROPS = [{
         return author;
       });
     },
-
     toSource: authors => authors.map(author => ({
       name: name.format(author)
     }))
@@ -3920,18 +3410,15 @@ const OL_PROPS = [{
   target: ['ISBN', 'ISSN', 'DOI', 'PMID', 'PMCID'],
   convert: {
     toTarget: identifiers => identifiers.isbn_13 || identifiers.isbn_10,
-
     toSource(...identifiers) {
       const ids = [identifiers[0] && `isbn_${identifiers[0].length}`, 'issn', 'doi', 'pmid', 'pmcid'];
       return identifiers.reduce((acc, id, i) => {
         if (id) {
           acc[ids[i]] = id;
         }
-
         return acc;
       }, {});
     }
-
   }
 }, {
   source: 'number_of_pages',
@@ -3968,23 +3455,18 @@ const OL_PROPS = [{
   target: 'URL'
 }];
 const translator = new _core.util.Translator(OL_PROPS);
-
 function parse(response) {
   return Object.keys(response).map(id => {
     return translator.convertToTarget(response[id]);
   });
 }
-
 function format(records) {
   const output = {};
-
   var _iterator = _createForOfIteratorHelper(records),
-      _step;
-
+    _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       const record = _step.value;
-
       if (!record.ISBN) {
         output[`ISBN:${record.ISBN}`] = translator.convertToSource(record);
       }
@@ -3994,7 +3476,6 @@ function format(records) {
   } finally {
     _iterator.f();
   }
-
   return output;
 }
 },{"@citation-js/core":"citation-js","@citation-js/date":43,"@citation-js/name":46}],58:[function(require,module,exports){
@@ -4005,10 +3486,8 @@ arguments[4][55][0].apply(exports,arguments)
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.formats = exports.ref = void 0;
-
+exports.ref = exports.formats = void 0;
 var _core = require("@citation-js/core");
-
 const ref = '@pubmed';
 exports.ref = ref;
 const formats = {
@@ -4021,7 +3500,6 @@ const formats = {
         headers
       });
     },
-
     parseType: {
       dataType: 'String',
       predicate: /^pmid:\d+$/
@@ -4036,7 +3514,6 @@ const formats = {
         headers
       });
     },
-
     parseType: {
       dataType: 'String',
       predicate: /^PMC\d+$/
@@ -5978,6 +5455,1345 @@ function numberIsNaN (obj) {
 
 }).call(this)}).call(this,require("buffer").Buffer)
 },{"base64-js":60,"buffer":61,"ieee754":63}],62:[function(require,module,exports){
+(function (global){(function (){
+(function (global) {
+  'use strict';
+
+  function fetchPonyfill(options) {
+    var Promise = options && options.Promise || global.Promise;
+    var XMLHttpRequest = options && options.XMLHttpRequest || global.XMLHttpRequest;
+
+    return (function () {
+      var globalThis = Object.create(global, {
+        fetch: {
+          value: undefined,
+          writable: true
+        }
+      });
+
+      (function (global, factory) {
+        typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+        typeof define === 'function' && define.amd ? define(['exports'], factory) :
+        (factory((global.WHATWGFetch = {})));
+      }(this, (function (exports) { 'use strict';
+
+        var global =
+          (typeof globalThis !== 'undefined' && globalThis) ||
+          (typeof self !== 'undefined' && self) ||
+          (typeof global !== 'undefined' && global);
+
+        var support = {
+          searchParams: 'URLSearchParams' in global,
+          iterable: 'Symbol' in global && 'iterator' in Symbol,
+          blob:
+            'FileReader' in global &&
+            'Blob' in global &&
+            (function() {
+              try {
+                new Blob();
+                return true
+              } catch (e) {
+                return false
+              }
+            })(),
+          formData: 'FormData' in global,
+          arrayBuffer: 'ArrayBuffer' in global
+        };
+
+        function isDataView(obj) {
+          return obj && DataView.prototype.isPrototypeOf(obj)
+        }
+
+        if (support.arrayBuffer) {
+          var viewClasses = [
+            '[object Int8Array]',
+            '[object Uint8Array]',
+            '[object Uint8ClampedArray]',
+            '[object Int16Array]',
+            '[object Uint16Array]',
+            '[object Int32Array]',
+            '[object Uint32Array]',
+            '[object Float32Array]',
+            '[object Float64Array]'
+          ];
+
+          var isArrayBufferView =
+            ArrayBuffer.isView ||
+            function(obj) {
+              return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+            };
+        }
+
+        function normalizeName(name) {
+          if (typeof name !== 'string') {
+            name = String(name);
+          }
+          if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === '') {
+            throw new TypeError('Invalid character in header field name')
+          }
+          return name.toLowerCase()
+        }
+
+        function normalizeValue(value) {
+          if (typeof value !== 'string') {
+            value = String(value);
+          }
+          return value
+        }
+
+        // Build a destructive iterator for the value list
+        function iteratorFor(items) {
+          var iterator = {
+            next: function() {
+              var value = items.shift();
+              return {done: value === undefined, value: value}
+            }
+          };
+
+          if (support.iterable) {
+            iterator[Symbol.iterator] = function() {
+              return iterator
+            };
+          }
+
+          return iterator
+        }
+
+        function Headers(headers) {
+          this.map = {};
+
+          if (headers instanceof Headers) {
+            headers.forEach(function(value, name) {
+              this.append(name, value);
+            }, this);
+          } else if (Array.isArray(headers)) {
+            headers.forEach(function(header) {
+              this.append(header[0], header[1]);
+            }, this);
+          } else if (headers) {
+            Object.getOwnPropertyNames(headers).forEach(function(name) {
+              this.append(name, headers[name]);
+            }, this);
+          }
+        }
+
+        Headers.prototype.append = function(name, value) {
+          name = normalizeName(name);
+          value = normalizeValue(value);
+          var oldValue = this.map[name];
+          this.map[name] = oldValue ? oldValue + ', ' + value : value;
+        };
+
+        Headers.prototype['delete'] = function(name) {
+          delete this.map[normalizeName(name)];
+        };
+
+        Headers.prototype.get = function(name) {
+          name = normalizeName(name);
+          return this.has(name) ? this.map[name] : null
+        };
+
+        Headers.prototype.has = function(name) {
+          return this.map.hasOwnProperty(normalizeName(name))
+        };
+
+        Headers.prototype.set = function(name, value) {
+          this.map[normalizeName(name)] = normalizeValue(value);
+        };
+
+        Headers.prototype.forEach = function(callback, thisArg) {
+          for (var name in this.map) {
+            if (this.map.hasOwnProperty(name)) {
+              callback.call(thisArg, this.map[name], name, this);
+            }
+          }
+        };
+
+        Headers.prototype.keys = function() {
+          var items = [];
+          this.forEach(function(value, name) {
+            items.push(name);
+          });
+          return iteratorFor(items)
+        };
+
+        Headers.prototype.values = function() {
+          var items = [];
+          this.forEach(function(value) {
+            items.push(value);
+          });
+          return iteratorFor(items)
+        };
+
+        Headers.prototype.entries = function() {
+          var items = [];
+          this.forEach(function(value, name) {
+            items.push([name, value]);
+          });
+          return iteratorFor(items)
+        };
+
+        if (support.iterable) {
+          Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+        }
+
+        function consumed(body) {
+          if (body.bodyUsed) {
+            return Promise.reject(new TypeError('Already read'))
+          }
+          body.bodyUsed = true;
+        }
+
+        function fileReaderReady(reader) {
+          return new Promise(function(resolve, reject) {
+            reader.onload = function() {
+              resolve(reader.result);
+            };
+            reader.onerror = function() {
+              reject(reader.error);
+            };
+          })
+        }
+
+        function readBlobAsArrayBuffer(blob) {
+          var reader = new FileReader();
+          var promise = fileReaderReady(reader);
+          reader.readAsArrayBuffer(blob);
+          return promise
+        }
+
+        function readBlobAsText(blob) {
+          var reader = new FileReader();
+          var promise = fileReaderReady(reader);
+          reader.readAsText(blob);
+          return promise
+        }
+
+        function readArrayBufferAsText(buf) {
+          var view = new Uint8Array(buf);
+          var chars = new Array(view.length);
+
+          for (var i = 0; i < view.length; i++) {
+            chars[i] = String.fromCharCode(view[i]);
+          }
+          return chars.join('')
+        }
+
+        function bufferClone(buf) {
+          if (buf.slice) {
+            return buf.slice(0)
+          } else {
+            var view = new Uint8Array(buf.byteLength);
+            view.set(new Uint8Array(buf));
+            return view.buffer
+          }
+        }
+
+        function Body() {
+          this.bodyUsed = false;
+
+          this._initBody = function(body) {
+            /*
+              fetch-mock wraps the Response object in an ES6 Proxy to
+              provide useful test harness features such as flush. However, on
+              ES5 browsers without fetch or Proxy support pollyfills must be used;
+              the proxy-pollyfill is unable to proxy an attribute unless it exists
+              on the object before the Proxy is created. This change ensures
+              Response.bodyUsed exists on the instance, while maintaining the
+              semantic of setting Request.bodyUsed in the constructor before
+              _initBody is called.
+            */
+            this.bodyUsed = this.bodyUsed;
+            this._bodyInit = body;
+            if (!body) {
+              this._bodyText = '';
+            } else if (typeof body === 'string') {
+              this._bodyText = body;
+            } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+              this._bodyBlob = body;
+            } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+              this._bodyFormData = body;
+            } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+              this._bodyText = body.toString();
+            } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+              this._bodyArrayBuffer = bufferClone(body.buffer);
+              // IE 10-11 can't handle a DataView body.
+              this._bodyInit = new Blob([this._bodyArrayBuffer]);
+            } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+              this._bodyArrayBuffer = bufferClone(body);
+            } else {
+              this._bodyText = body = Object.prototype.toString.call(body);
+            }
+
+            if (!this.headers.get('content-type')) {
+              if (typeof body === 'string') {
+                this.headers.set('content-type', 'text/plain;charset=UTF-8');
+              } else if (this._bodyBlob && this._bodyBlob.type) {
+                this.headers.set('content-type', this._bodyBlob.type);
+              } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+                this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+              }
+            }
+          };
+
+          if (support.blob) {
+            this.blob = function() {
+              var rejected = consumed(this);
+              if (rejected) {
+                return rejected
+              }
+
+              if (this._bodyBlob) {
+                return Promise.resolve(this._bodyBlob)
+              } else if (this._bodyArrayBuffer) {
+                return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+              } else if (this._bodyFormData) {
+                throw new Error('could not read FormData body as blob')
+              } else {
+                return Promise.resolve(new Blob([this._bodyText]))
+              }
+            };
+
+            this.arrayBuffer = function() {
+              if (this._bodyArrayBuffer) {
+                var isConsumed = consumed(this);
+                if (isConsumed) {
+                  return isConsumed
+                }
+                if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
+                  return Promise.resolve(
+                    this._bodyArrayBuffer.buffer.slice(
+                      this._bodyArrayBuffer.byteOffset,
+                      this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
+                    )
+                  )
+                } else {
+                  return Promise.resolve(this._bodyArrayBuffer)
+                }
+              } else {
+                return this.blob().then(readBlobAsArrayBuffer)
+              }
+            };
+          }
+
+          this.text = function() {
+            var rejected = consumed(this);
+            if (rejected) {
+              return rejected
+            }
+
+            if (this._bodyBlob) {
+              return readBlobAsText(this._bodyBlob)
+            } else if (this._bodyArrayBuffer) {
+              return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+            } else if (this._bodyFormData) {
+              throw new Error('could not read FormData body as text')
+            } else {
+              return Promise.resolve(this._bodyText)
+            }
+          };
+
+          if (support.formData) {
+            this.formData = function() {
+              return this.text().then(decode)
+            };
+          }
+
+          this.json = function() {
+            return this.text().then(JSON.parse)
+          };
+
+          return this
+        }
+
+        // HTTP methods whose capitalization should be normalized
+        var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
+
+        function normalizeMethod(method) {
+          var upcased = method.toUpperCase();
+          return methods.indexOf(upcased) > -1 ? upcased : method
+        }
+
+        function Request(input, options) {
+          if (!(this instanceof Request)) {
+            throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
+          }
+
+          options = options || {};
+          var body = options.body;
+
+          if (input instanceof Request) {
+            if (input.bodyUsed) {
+              throw new TypeError('Already read')
+            }
+            this.url = input.url;
+            this.credentials = input.credentials;
+            if (!options.headers) {
+              this.headers = new Headers(input.headers);
+            }
+            this.method = input.method;
+            this.mode = input.mode;
+            this.signal = input.signal;
+            if (!body && input._bodyInit != null) {
+              body = input._bodyInit;
+              input.bodyUsed = true;
+            }
+          } else {
+            this.url = String(input);
+          }
+
+          this.credentials = options.credentials || this.credentials || 'same-origin';
+          if (options.headers || !this.headers) {
+            this.headers = new Headers(options.headers);
+          }
+          this.method = normalizeMethod(options.method || this.method || 'GET');
+          this.mode = options.mode || this.mode || null;
+          this.signal = options.signal || this.signal;
+          this.referrer = null;
+
+          if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+            throw new TypeError('Body not allowed for GET or HEAD requests')
+          }
+          this._initBody(body);
+
+          if (this.method === 'GET' || this.method === 'HEAD') {
+            if (options.cache === 'no-store' || options.cache === 'no-cache') {
+              // Search for a '_' parameter in the query string
+              var reParamSearch = /([?&])_=[^&]*/;
+              if (reParamSearch.test(this.url)) {
+                // If it already exists then set the value with the current time
+                this.url = this.url.replace(reParamSearch, '$1_=' + new Date().getTime());
+              } else {
+                // Otherwise add a new '_' parameter to the end with the current time
+                var reQueryString = /\?/;
+                this.url += (reQueryString.test(this.url) ? '&' : '?') + '_=' + new Date().getTime();
+              }
+            }
+          }
+        }
+
+        Request.prototype.clone = function() {
+          return new Request(this, {body: this._bodyInit})
+        };
+
+        function decode(body) {
+          var form = new FormData();
+          body
+            .trim()
+            .split('&')
+            .forEach(function(bytes) {
+              if (bytes) {
+                var split = bytes.split('=');
+                var name = split.shift().replace(/\+/g, ' ');
+                var value = split.join('=').replace(/\+/g, ' ');
+                form.append(decodeURIComponent(name), decodeURIComponent(value));
+              }
+            });
+          return form
+        }
+
+        function parseHeaders(rawHeaders) {
+          var headers = new Headers();
+          // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
+          // https://tools.ietf.org/html/rfc7230#section-3.2
+          var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
+          // Avoiding split via regex to work around a common IE11 bug with the core-js 3.6.0 regex polyfill
+          // https://github.com/github/fetch/issues/748
+          // https://github.com/zloirock/core-js/issues/751
+          preProcessedHeaders
+            .split('\r')
+            .map(function(header) {
+              return header.indexOf('\n') === 0 ? header.substr(1, header.length) : header
+            })
+            .forEach(function(line) {
+              var parts = line.split(':');
+              var key = parts.shift().trim();
+              if (key) {
+                var value = parts.join(':').trim();
+                headers.append(key, value);
+              }
+            });
+          return headers
+        }
+
+        Body.call(Request.prototype);
+
+        function Response(bodyInit, options) {
+          if (!(this instanceof Response)) {
+            throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
+          }
+          if (!options) {
+            options = {};
+          }
+
+          this.type = 'default';
+          this.status = options.status === undefined ? 200 : options.status;
+          this.ok = this.status >= 200 && this.status < 300;
+          this.statusText = 'statusText' in options ? options.statusText : '';
+          this.headers = new Headers(options.headers);
+          this.url = options.url || '';
+          this._initBody(bodyInit);
+        }
+
+        Body.call(Response.prototype);
+
+        Response.prototype.clone = function() {
+          return new Response(this._bodyInit, {
+            status: this.status,
+            statusText: this.statusText,
+            headers: new Headers(this.headers),
+            url: this.url
+          })
+        };
+
+        Response.error = function() {
+          var response = new Response(null, {status: 0, statusText: ''});
+          response.type = 'error';
+          return response
+        };
+
+        var redirectStatuses = [301, 302, 303, 307, 308];
+
+        Response.redirect = function(url, status) {
+          if (redirectStatuses.indexOf(status) === -1) {
+            throw new RangeError('Invalid status code')
+          }
+
+          return new Response(null, {status: status, headers: {location: url}})
+        };
+
+        exports.DOMException = global.DOMException;
+        try {
+          new exports.DOMException();
+        } catch (err) {
+          exports.DOMException = function(message, name) {
+            this.message = message;
+            this.name = name;
+            var error = Error(message);
+            this.stack = error.stack;
+          };
+          exports.DOMException.prototype = Object.create(Error.prototype);
+          exports.DOMException.prototype.constructor = exports.DOMException;
+        }
+
+        function fetch(input, init) {
+          return new Promise(function(resolve, reject) {
+            var request = new Request(input, init);
+
+            if (request.signal && request.signal.aborted) {
+              return reject(new exports.DOMException('Aborted', 'AbortError'))
+            }
+
+            var xhr = new XMLHttpRequest();
+
+            function abortXhr() {
+              xhr.abort();
+            }
+
+            xhr.onload = function() {
+              var options = {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+              };
+              options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
+              var body = 'response' in xhr ? xhr.response : xhr.responseText;
+              setTimeout(function() {
+                resolve(new Response(body, options));
+              }, 0);
+            };
+
+            xhr.onerror = function() {
+              setTimeout(function() {
+                reject(new TypeError('Network request failed'));
+              }, 0);
+            };
+
+            xhr.ontimeout = function() {
+              setTimeout(function() {
+                reject(new TypeError('Network request failed'));
+              }, 0);
+            };
+
+            xhr.onabort = function() {
+              setTimeout(function() {
+                reject(new exports.DOMException('Aborted', 'AbortError'));
+              }, 0);
+            };
+
+            function fixUrl(url) {
+              try {
+                return url === '' && global.location.href ? global.location.href : url
+              } catch (e) {
+                return url
+              }
+            }
+
+            xhr.open(request.method, fixUrl(request.url), true);
+
+            if (request.credentials === 'include') {
+              xhr.withCredentials = true;
+            } else if (request.credentials === 'omit') {
+              xhr.withCredentials = false;
+            }
+
+            if ('responseType' in xhr) {
+              if (support.blob) {
+                xhr.responseType = 'blob';
+              } else if (
+                support.arrayBuffer &&
+                request.headers.get('Content-Type') &&
+                request.headers.get('Content-Type').indexOf('application/octet-stream') !== -1
+              ) {
+                xhr.responseType = 'arraybuffer';
+              }
+            }
+
+            if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
+              Object.getOwnPropertyNames(init.headers).forEach(function(name) {
+                xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
+              });
+            } else {
+              request.headers.forEach(function(value, name) {
+                xhr.setRequestHeader(name, value);
+              });
+            }
+
+            if (request.signal) {
+              request.signal.addEventListener('abort', abortXhr);
+
+              xhr.onreadystatechange = function() {
+                // DONE (success or failure)
+                if (xhr.readyState === 4) {
+                  request.signal.removeEventListener('abort', abortXhr);
+                }
+              };
+            }
+
+            xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
+          })
+        }
+
+        fetch.polyfill = true;
+
+        if (!global.fetch) {
+          global.fetch = fetch;
+          global.Headers = Headers;
+          global.Request = Request;
+          global.Response = Response;
+        }
+
+        exports.Headers = Headers;
+        exports.Request = Request;
+        exports.Response = Response;
+        exports.fetch = fetch;
+
+        Object.defineProperty(exports, '__esModule', { value: true });
+
+      })));
+
+
+      return {
+        fetch: globalThis.fetch,
+        Headers: globalThis.Headers,
+        Request: globalThis.Request,
+        Response: globalThis.Response,
+        DOMException: globalThis.DOMException
+      };
+    }());
+  }
+
+  if (typeof define === 'function' && define.amd) {
+    define(function () {
+      return fetchPonyfill;
+    });
+  } else if (typeof exports === 'object') {
+    module.exports = fetchPonyfill;
+  } else {
+    global.fetchPonyfill = fetchPonyfill;
+  }
+}(typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this));
+
+
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],63:[function(require,module,exports){
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],64:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],65:[function(require,module,exports){
+/* eslint-env browser */
+
+const { Buffer } = require('buffer/')
+
+function syncFetch (...args) {
+  const request = new syncFetch.Request(...args)
+
+  const xhr = new XMLHttpRequest()
+  xhr.withCredentials = request.credentials === 'include'
+  xhr.timeout = request[INTERNALS].timeout
+
+  // Request
+  xhr.open(request.method, request.url, false)
+
+  let useBinaryEncoding = false
+  try {
+    // Only allowed in Worker scope, not available in older browsers
+    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType#Synchronous_XHR_restrictions
+    xhr.responseType = 'arraybuffer'
+  } catch (e) {
+    // Not in Worker scope; instead, attempt this alternative method
+    // https://web.archive.org/web/20071103070418/http://mgran.blogspot.com/2006/08/downloading-binary-streams-with.html
+    xhr.overrideMimeType('text/plain; charset=x-user-defined')
+    useBinaryEncoding = true
+  }
+
+  for (const header of request.headers) {
+    xhr.setRequestHeader(...header)
+  }
+
+  xhr.send(request.body || null)
+
+  // Response
+  let headers = xhr.getAllResponseHeaders()
+  headers = headers && headers.split('\r\n').filter(Boolean).map(header => header.split(': ', 2))
+
+  let body = xhr.response
+  if (useBinaryEncoding) {
+    const buffer = Buffer.alloc(body.length)
+    for (let i = 0; i < body.length; i++) {
+      buffer[i] = body.charCodeAt(i) & 0xff
+    }
+    body = buffer
+  }
+
+  const response = new syncFetch.Response(body, {
+    headers,
+    status: xhr.status,
+    statusText: xhr.statusText
+  })
+
+  response[INTERNALS].url = xhr.responseURL
+  response[INTERNALS].redirected = xhr.responseURL !== request.url
+
+  return response
+}
+
+const INTERNALS = Symbol('SyncFetch Internals')
+const REQ_UNSUPPORTED = ['mode', 'cache', 'redirect', 'referrer', 'integrity']
+const HTTP_STATUS = {
+  100: 'Continue',
+  101: 'Switching Protocols',
+  200: 'OK',
+  201: 'Created',
+  202: 'Accepted',
+  203: 'Non-Authoritative Information',
+  204: 'No Content',
+  205: 'Reset Content',
+  206: 'Partial Content',
+  300: 'Multiple Choices',
+  301: 'Moved Permanently',
+  302: 'Found',
+  303: 'See Other',
+  304: 'Not Modified',
+  305: 'Use Proxy',
+  307: 'Temporary Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  406: 'Not Acceptable',
+  407: 'Proxy Authentication Required',
+  408: 'Request Timeout',
+  409: 'Conflict',
+  410: 'Gone',
+  411: 'Length Required',
+  412: 'Precondition Failed',
+  413: 'Payload Too Large',
+  414: 'URI Too Long',
+  415: 'Unsupported Media Type',
+  416: 'Range Not Satisfiable',
+  417: 'Expectation Failed',
+  426: 'Upgrade Required',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+  505: 'HTTP Version Not Supported'
+}
+
+class SyncRequest {
+  constructor (resource, init = {}) {
+    for (const option of REQ_UNSUPPORTED) {
+      if (option in init) {
+        throw new TypeError(`option ${option} not supported`)
+      }
+    }
+
+    if (init.credentials === 'same-origin') {
+      throw new TypeError('option credentials with value \'same-origin\' not supported')
+    }
+
+    this[INTERNALS] = {
+      method: init.method || 'GET',
+      headers: new syncFetch.Headers(init.headers),
+      body: init.body ? Buffer.from(init.body) : null,
+      credentials: init.credentials || 'omit',
+
+      // Non-spec
+      timeout: init.timeout || 0
+    }
+
+    if (typeof resource === 'string') {
+      this[INTERNALS].url = resource
+    } else if (resource instanceof SyncRequest) {
+      this[INTERNALS].url = resource.url
+      if (!init.method) {
+        this[INTERNALS].method = resource.method
+      }
+      if (!init.headers) {
+        this[INTERNALS].headers = resource.headers
+      }
+      if (!init.body) {
+        this[INTERNALS].body = resource[INTERNALS].body
+      }
+      if (!init.credentials) {
+        this[INTERNALS].credentials = resource.credentials
+      }
+    } else {
+      throw new TypeError('Request input should be a URL string or a Request object')
+    }
+  }
+
+  get cache () {
+    return 'default'
+  }
+
+  get credentials () {
+    return this[INTERNALS].credentials
+  }
+
+  get destination () {
+    return ''
+  }
+
+  get headers () {
+    return this[INTERNALS].headers
+  }
+
+  get integrity () {
+    return ''
+  }
+
+  get method () {
+    return this[INTERNALS].method
+  }
+
+  get mode () {
+    return 'cors'
+  }
+
+  get priority () {
+    return 'auto'
+  }
+
+  get redirect () {
+    return 'follow'
+  }
+
+  get referrer () {
+    return 'about:client'
+  }
+
+  get referrerPolicy () {
+    return ''
+  }
+
+  get url () {
+    return this[INTERNALS].url
+  }
+
+  clone () {
+    checkBody(this)
+    return new SyncRequest(this.url, this[INTERNALS])
+  }
+}
+
+class SyncResponse {
+  constructor (body, init = {}) {
+    this[INTERNALS] = {
+      body: body ? Buffer.from(body) : null,
+      bodyUsed: false,
+
+      headers: new syncFetch.Headers(init.headers),
+      status: init.status,
+      statusText: init.statusText
+    }
+  }
+
+  get headers () {
+    return this[INTERNALS].headers
+  }
+
+  get ok () {
+    const status = this[INTERNALS].status
+    return status >= 200 && status < 300
+  }
+
+  get redirected () {
+    return this[INTERNALS].redirected
+  }
+
+  get status () {
+    return this[INTERNALS].status
+  }
+
+  get statusText () {
+    return this[INTERNALS].statusText
+  }
+
+  get url () {
+    return this[INTERNALS].url
+  }
+
+  clone () {
+    return this.redirect(this[INTERNALS].url, this[INTERNALS].status)
+  }
+
+  redirect (url, status) {
+    checkBody(this)
+
+    const response = new SyncResponse(this[INTERNALS].body, {
+      headers: this[INTERNALS].headers,
+      status: status || this[INTERNALS].status,
+      statusText: HTTP_STATUS[status] || this[INTERNALS].statusText
+    })
+
+    response[INTERNALS].url = url || this[INTERNALS].url
+    response[INTERNALS].redirected = this[INTERNALS].redirected
+
+    return response
+  }
+}
+
+class Body {
+  constructor (body) {
+    this[INTERNALS] = {
+      body: Buffer.from(body),
+      bodyUsed: false
+    }
+  }
+
+  get bodyUsed () {
+    return this[INTERNALS].bodyUsed
+  }
+
+  static mixin (prototype) {
+    for (const name of Object.getOwnPropertyNames(Body.prototype)) {
+      if (name === 'constructor') { continue }
+      const desc = Object.getOwnPropertyDescriptor(Body.prototype, name)
+      Object.defineProperty(prototype, name, { ...desc, enumerable: true })
+    }
+  }
+
+  arrayBuffer () {
+    const buffer = consumeBody(this)
+    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+  }
+
+  blob () {
+    const type = this.headers && this.headers.get('content-type')
+    return new Blob([consumeBody(this)], type && { type })
+  }
+
+  text () {
+    return consumeBody(this).toString()
+  }
+
+  json () {
+    try {
+      return JSON.parse(consumeBody(this).toString())
+    } catch (err) {
+      throw new TypeError(`invalid json response body at ${this.url} reason: ${err.message}`, 'invalid-json')
+    }
+  }
+
+  buffer () {
+    return consumeBody(this).clone()
+  }
+}
+
+function checkBody (body) {
+  if (body.bodyUsed) {
+    throw new TypeError(`body used already for: ${body.url}`)
+  }
+}
+
+function consumeBody (body) {
+  checkBody(body)
+  body[INTERNALS].bodyUsed = true
+  return body[INTERNALS].body || Buffer.alloc(0)
+}
+
+Body.mixin(SyncRequest.prototype)
+Body.mixin(SyncResponse.prototype)
+
+class Headers {
+  constructor (headers) {
+    if (headers instanceof syncFetch.Headers) {
+      this[INTERNALS] = { ...headers[INTERNALS] }
+    } else {
+      this[INTERNALS] = {}
+
+      if (Array.isArray(headers)) {
+        for (const [name, value] of headers) {
+          this.append(name, value)
+        }
+      } else if (typeof headers === 'object') {
+        for (const name in headers) {
+          this.set(name, headers[name])
+        }
+      }
+    }
+  }
+
+  // modification
+  append (name, value) {
+    name = name.toLowerCase()
+    if (!this[INTERNALS][name]) {
+      this[INTERNALS][name] = []
+    }
+    this[INTERNALS][name].push(value)
+  }
+
+  delete (name) {
+    delete this[INTERNALS][name.toLowerCase()]
+  }
+
+  set (name, value) {
+    this[INTERNALS][name.toLowerCase()] = [value]
+  }
+
+  // access
+  entries () {
+    const pairs = []
+    for (const name in this[INTERNALS]) {
+      for (const value of this[INTERNALS][name]) {
+        pairs.push([name, value])
+      }
+    }
+    return pairs
+  }
+
+  get (name) {
+    name = name.toLowerCase()
+    return name in this[INTERNALS] ? this[INTERNALS][name].join(', ') : null
+  }
+
+  keys () {
+    return Object.keys(this[INTERNALS])
+  }
+
+  has (name) {
+    return name.toLowerCase() in this[INTERNALS]
+  }
+
+  values () {
+    const values = []
+    for (const name in this[INTERNALS]) {
+      for (const value of this[INTERNALS][name]) {
+        values.push(value)
+      }
+    }
+    return values
+  }
+
+  * [Symbol.iterator] () {
+    for (const name in this[INTERNALS]) {
+      for (const value of this[INTERNALS][name]) {
+        yield [name, value]
+      }
+    }
+  }
+}
+
+syncFetch.Headers = Headers
+syncFetch.Request = SyncRequest
+syncFetch.Response = SyncResponse
+module.exports = syncFetch
+
+},{"buffer/":66}],66:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -7798,1098 +8614,7 @@ var hexSliceLookupTable = (function () {
 })()
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":60,"buffer":61,"ieee754":63}],63:[function(require,module,exports){
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = ((value * c) - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},{}],64:[function(require,module,exports){
-// the whatwg-fetch polyfill installs the fetch() function
-// on the global object (window or self)
-//
-// Return that as the export for use in Webpack, Browserify etc.
-require('whatwg-fetch');
-module.exports = self.fetch.bind(self);
-
-},{"whatwg-fetch":67}],65:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],66:[function(require,module,exports){
-/* eslint-env browser */
-
-const { Buffer } = require('buffer/')
-
-function syncFetch (...args) {
-  const [url, opts] = parseArgs(...args)
-
-  const xhr = new XMLHttpRequest()
-  xhr.withCredentials = opts.credentials === 'include'
-  xhr.timeout = opts.timeout
-
-  // Request
-  xhr.open(opts.method || 'GET', url, false)
-
-  try {
-    xhr.responseType = 'arraybuffer'
-  } catch (e) {
-    // not in Worker scope
-    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType#Synchronous_XHR_restrictions
-  }
-
-  for (const header of opts.headers) {
-    xhr.setRequestHeader(...header)
-  }
-
-  xhr.send(opts.body || null)
-
-  // Response
-  let headers = xhr.getAllResponseHeaders()
-  headers = headers && headers.split('\r\n').filter(Boolean).map(header => header.split(': ', 2))
-
-  return new syncFetch.Response(xhr.response, {
-    url: xhr.responseURL,
-    status: xhr.status,
-    statusText: xhr.statusText,
-    headers,
-    redirected: xhr.responseURL !== url
-  })
-}
-
-function parseArgs (resource, init) {
-  const request = []
-
-  if (resource instanceof syncFetch.Request) {
-    request.push(resource.url)
-    request.push({
-      method: resource.method,
-      headers: resource.headers,
-      body: resource.body
-    })
-  } else {
-    request.push(resource, {})
-  }
-
-  Object.assign(request[1], init)
-
-  request[1].headers = new syncFetch.Headers(request[1].headers || {})
-
-  return request
-}
-
-const INTERNALS = Symbol('SyncFetch Internals')
-
-class SyncRequest extends Request {
-  constructor (resource, init = {}, body = init.body) {
-    super(resource, init)
-    this[INTERNALS] = {
-      body: body ? Buffer.from(body) : null
-    }
-  }
-
-  clone () {
-    checkBody(this)
-    return new SyncRequest(this.url, this)
-  }
-}
-
-class SyncResponse extends Response {
-  constructor (body, init = {}) {
-    body = body ? Buffer.from(body) : null
-    super(createStream(body), init)
-    this[INTERNALS] = {
-      url: init.url,
-      redirected: init.redirected,
-      body
-    }
-  }
-
-  get url () {
-    return this[INTERNALS].url
-  }
-
-  get redirected () {
-    return this[INTERNALS].redirected
-  }
-
-  clone () {
-    checkBody(this)
-    return new SyncResponse(this[INTERNALS].body, {
-      url: this.url,
-      headers: this.headers,
-      status: this.status,
-      statusText: this.statusText,
-      redirected: this.redirected
-    })
-  }
-}
-
-class Body {
-  constructor (body) {
-    this[INTERNALS] = {
-      body: Buffer.from(body)
-    }
-  }
-
-  static mixin (prototype) {
-    for (const name of Object.getOwnPropertyNames(Body.prototype)) {
-      if (name === 'constructor') { continue }
-      const desc = Object.getOwnPropertyDescriptor(Body.prototype, name)
-      Object.defineProperty(prototype, name, { ...desc, enumerable: true })
-    }
-  }
-
-  arrayBuffer () {
-    checkBody(this)
-    const buffer = consumeBody(this)
-    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
-  }
-
-  blob () {
-    checkBody(this)
-    const type = this.headers && this.headers.get('content-type')
-    return new Blob([consumeBody(this)], type && { type })
-  }
-
-  text () {
-    checkBody(this)
-    return consumeBody(this).toString()
-  }
-
-  json () {
-    checkBody(this)
-    try {
-      return JSON.parse(consumeBody(this).toString())
-    } catch (err) {
-      throw new TypeError(`invalid json response body at ${this.url} reason: ${err.message}`, 'invalid-json')
-    }
-  }
-
-  buffer () {
-    checkBody(this)
-    return consumeBody(this).clone()
-  }
-}
-
-function checkBody (body) {
-  if (body.bodyUsed) {
-    throw new TypeError(`body used already for: ${body.url}`)
-  }
-}
-
-function consumeBody (body) {
-  _super(body, 'arrayBuffer')()
-  return body[INTERNALS].body || Buffer.alloc(0)
-}
-
-function _super (self, method) {
-  return Object.getPrototypeOf(Object.getPrototypeOf(self))[method].bind(self)
-}
-
-function createStream (body) {
-  return new ReadableStream({
-    start (controller) {
-      controller.enqueue(body)
-      controller.close()
-    }
-  })
-}
-
-Body.mixin(SyncRequest.prototype)
-Body.mixin(SyncResponse.prototype)
-
-syncFetch.Headers = self.Headers
-syncFetch.Request = SyncRequest
-syncFetch.Response = SyncResponse
-module.exports = syncFetch
-
-},{"buffer/":62}],67:[function(require,module,exports){
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.WHATWGFetch = {})));
-}(this, (function (exports) { 'use strict';
-
-  var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof self !== 'undefined' && self) ||
-    (typeof global !== 'undefined' && global);
-
-  var support = {
-    searchParams: 'URLSearchParams' in global,
-    iterable: 'Symbol' in global && 'iterator' in Symbol,
-    blob:
-      'FileReader' in global &&
-      'Blob' in global &&
-      (function() {
-        try {
-          new Blob();
-          return true
-        } catch (e) {
-          return false
-        }
-      })(),
-    formData: 'FormData' in global,
-    arrayBuffer: 'ArrayBuffer' in global
-  };
-
-  function isDataView(obj) {
-    return obj && DataView.prototype.isPrototypeOf(obj)
-  }
-
-  if (support.arrayBuffer) {
-    var viewClasses = [
-      '[object Int8Array]',
-      '[object Uint8Array]',
-      '[object Uint8ClampedArray]',
-      '[object Int16Array]',
-      '[object Uint16Array]',
-      '[object Int32Array]',
-      '[object Uint32Array]',
-      '[object Float32Array]',
-      '[object Float64Array]'
-    ];
-
-    var isArrayBufferView =
-      ArrayBuffer.isView ||
-      function(obj) {
-        return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
-      };
-  }
-
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name);
-    }
-    if (/[^a-z0-9\-#$%&'*+.^_`|~!]/i.test(name) || name === '') {
-      throw new TypeError('Invalid character in header field name: "' + name + '"')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value);
-    }
-    return value
-  }
-
-  // Build a destructive iterator for the value list
-  function iteratorFor(items) {
-    var iterator = {
-      next: function() {
-        var value = items.shift();
-        return {done: value === undefined, value: value}
-      }
-    };
-
-    if (support.iterable) {
-      iterator[Symbol.iterator] = function() {
-        return iterator
-      };
-    }
-
-    return iterator
-  }
-
-  function Headers(headers) {
-    this.map = {};
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value);
-      }, this);
-    } else if (Array.isArray(headers)) {
-      headers.forEach(function(header) {
-        this.append(header[0], header[1]);
-      }, this);
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name]);
-      }, this);
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name);
-    value = normalizeValue(value);
-    var oldValue = this.map[name];
-    this.map[name] = oldValue ? oldValue + ', ' + value : value;
-  };
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)];
-  };
-
-  Headers.prototype.get = function(name) {
-    name = normalizeName(name);
-    return this.has(name) ? this.map[name] : null
-  };
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  };
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = normalizeValue(value);
-  };
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    for (var name in this.map) {
-      if (this.map.hasOwnProperty(name)) {
-        callback.call(thisArg, this.map[name], name, this);
-      }
-    }
-  };
-
-  Headers.prototype.keys = function() {
-    var items = [];
-    this.forEach(function(value, name) {
-      items.push(name);
-    });
-    return iteratorFor(items)
-  };
-
-  Headers.prototype.values = function() {
-    var items = [];
-    this.forEach(function(value) {
-      items.push(value);
-    });
-    return iteratorFor(items)
-  };
-
-  Headers.prototype.entries = function() {
-    var items = [];
-    this.forEach(function(value, name) {
-      items.push([name, value]);
-    });
-    return iteratorFor(items)
-  };
-
-  if (support.iterable) {
-    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true;
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result);
-      };
-      reader.onerror = function() {
-        reject(reader.error);
-      };
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader();
-    var promise = fileReaderReady(reader);
-    reader.readAsArrayBuffer(blob);
-    return promise
-  }
-
-  function readBlobAsText(blob) {
-    var reader = new FileReader();
-    var promise = fileReaderReady(reader);
-    reader.readAsText(blob);
-    return promise
-  }
-
-  function readArrayBufferAsText(buf) {
-    var view = new Uint8Array(buf);
-    var chars = new Array(view.length);
-
-    for (var i = 0; i < view.length; i++) {
-      chars[i] = String.fromCharCode(view[i]);
-    }
-    return chars.join('')
-  }
-
-  function bufferClone(buf) {
-    if (buf.slice) {
-      return buf.slice(0)
-    } else {
-      var view = new Uint8Array(buf.byteLength);
-      view.set(new Uint8Array(buf));
-      return view.buffer
-    }
-  }
-
-  function Body() {
-    this.bodyUsed = false;
-
-    this._initBody = function(body) {
-      /*
-        fetch-mock wraps the Response object in an ES6 Proxy to
-        provide useful test harness features such as flush. However, on
-        ES5 browsers without fetch or Proxy support pollyfills must be used;
-        the proxy-pollyfill is unable to proxy an attribute unless it exists
-        on the object before the Proxy is created. This change ensures
-        Response.bodyUsed exists on the instance, while maintaining the
-        semantic of setting Request.bodyUsed in the constructor before
-        _initBody is called.
-      */
-      this.bodyUsed = this.bodyUsed;
-      this._bodyInit = body;
-      if (!body) {
-        this._bodyText = '';
-      } else if (typeof body === 'string') {
-        this._bodyText = body;
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body;
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body;
-      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-        this._bodyText = body.toString();
-      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-        this._bodyArrayBuffer = bufferClone(body.buffer);
-        // IE 10-11 can't handle a DataView body.
-        this._bodyInit = new Blob([this._bodyArrayBuffer]);
-      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-        this._bodyArrayBuffer = bufferClone(body);
-      } else {
-        this._bodyText = body = Object.prototype.toString.call(body);
-      }
-
-      if (!this.headers.get('content-type')) {
-        if (typeof body === 'string') {
-          this.headers.set('content-type', 'text/plain;charset=UTF-8');
-        } else if (this._bodyBlob && this._bodyBlob.type) {
-          this.headers.set('content-type', this._bodyBlob.type);
-        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-        }
-      }
-    };
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this);
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyArrayBuffer) {
-          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      };
-
-      this.arrayBuffer = function() {
-        if (this._bodyArrayBuffer) {
-          var isConsumed = consumed(this);
-          if (isConsumed) {
-            return isConsumed
-          }
-          if (ArrayBuffer.isView(this._bodyArrayBuffer)) {
-            return Promise.resolve(
-              this._bodyArrayBuffer.buffer.slice(
-                this._bodyArrayBuffer.byteOffset,
-                this._bodyArrayBuffer.byteOffset + this._bodyArrayBuffer.byteLength
-              )
-            )
-          } else {
-            return Promise.resolve(this._bodyArrayBuffer)
-          }
-        } else {
-          return this.blob().then(readBlobAsArrayBuffer)
-        }
-      };
-    }
-
-    this.text = function() {
-      var rejected = consumed(this);
-      if (rejected) {
-        return rejected
-      }
-
-      if (this._bodyBlob) {
-        return readBlobAsText(this._bodyBlob)
-      } else if (this._bodyArrayBuffer) {
-        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-      } else if (this._bodyFormData) {
-        throw new Error('could not read FormData body as text')
-      } else {
-        return Promise.resolve(this._bodyText)
-      }
-    };
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      };
-    }
-
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    };
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase();
-    return methods.indexOf(upcased) > -1 ? upcased : method
-  }
-
-  function Request(input, options) {
-    if (!(this instanceof Request)) {
-      throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
-    }
-
-    options = options || {};
-    var body = options.body;
-
-    if (input instanceof Request) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url;
-      this.credentials = input.credentials;
-      if (!options.headers) {
-        this.headers = new Headers(input.headers);
-      }
-      this.method = input.method;
-      this.mode = input.mode;
-      this.signal = input.signal;
-      if (!body && input._bodyInit != null) {
-        body = input._bodyInit;
-        input.bodyUsed = true;
-      }
-    } else {
-      this.url = String(input);
-    }
-
-    this.credentials = options.credentials || this.credentials || 'same-origin';
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers);
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET');
-    this.mode = options.mode || this.mode || null;
-    this.signal = options.signal || this.signal;
-    this.referrer = null;
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body);
-
-    if (this.method === 'GET' || this.method === 'HEAD') {
-      if (options.cache === 'no-store' || options.cache === 'no-cache') {
-        // Search for a '_' parameter in the query string
-        var reParamSearch = /([?&])_=[^&]*/;
-        if (reParamSearch.test(this.url)) {
-          // If it already exists then set the value with the current time
-          this.url = this.url.replace(reParamSearch, '$1_=' + new Date().getTime());
-        } else {
-          // Otherwise add a new '_' parameter to the end with the current time
-          var reQueryString = /\?/;
-          this.url += (reQueryString.test(this.url) ? '&' : '?') + '_=' + new Date().getTime();
-        }
-      }
-    }
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this, {body: this._bodyInit})
-  };
-
-  function decode(body) {
-    var form = new FormData();
-    body
-      .trim()
-      .split('&')
-      .forEach(function(bytes) {
-        if (bytes) {
-          var split = bytes.split('=');
-          var name = split.shift().replace(/\+/g, ' ');
-          var value = split.join('=').replace(/\+/g, ' ');
-          form.append(decodeURIComponent(name), decodeURIComponent(value));
-        }
-      });
-    return form
-  }
-
-  function parseHeaders(rawHeaders) {
-    var headers = new Headers();
-    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
-    // https://tools.ietf.org/html/rfc7230#section-3.2
-    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
-    // Avoiding split via regex to work around a common IE11 bug with the core-js 3.6.0 regex polyfill
-    // https://github.com/github/fetch/issues/748
-    // https://github.com/zloirock/core-js/issues/751
-    preProcessedHeaders
-      .split('\r')
-      .map(function(header) {
-        return header.indexOf('\n') === 0 ? header.substr(1, header.length) : header
-      })
-      .forEach(function(line) {
-        var parts = line.split(':');
-        var key = parts.shift().trim();
-        if (key) {
-          var value = parts.join(':').trim();
-          headers.append(key, value);
-        }
-      });
-    return headers
-  }
-
-  Body.call(Request.prototype);
-
-  function Response(bodyInit, options) {
-    if (!(this instanceof Response)) {
-      throw new TypeError('Please use the "new" operator, this DOM object constructor cannot be called as a function.')
-    }
-    if (!options) {
-      options = {};
-    }
-
-    this.type = 'default';
-    this.status = options.status === undefined ? 200 : options.status;
-    this.ok = this.status >= 200 && this.status < 300;
-    this.statusText = options.statusText === undefined ? '' : '' + options.statusText;
-    this.headers = new Headers(options.headers);
-    this.url = options.url || '';
-    this._initBody(bodyInit);
-  }
-
-  Body.call(Response.prototype);
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  };
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''});
-    response.type = 'error';
-    return response
-  };
-
-  var redirectStatuses = [301, 302, 303, 307, 308];
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  };
-
-  exports.DOMException = global.DOMException;
-  try {
-    new exports.DOMException();
-  } catch (err) {
-    exports.DOMException = function(message, name) {
-      this.message = message;
-      this.name = name;
-      var error = Error(message);
-      this.stack = error.stack;
-    };
-    exports.DOMException.prototype = Object.create(Error.prototype);
-    exports.DOMException.prototype.constructor = exports.DOMException;
-  }
-
-  function fetch(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request = new Request(input, init);
-
-      if (request.signal && request.signal.aborted) {
-        return reject(new exports.DOMException('Aborted', 'AbortError'))
-      }
-
-      var xhr = new XMLHttpRequest();
-
-      function abortXhr() {
-        xhr.abort();
-      }
-
-      xhr.onload = function() {
-        var options = {
-          status: xhr.status,
-          statusText: xhr.statusText,
-          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
-        };
-        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-        setTimeout(function() {
-          resolve(new Response(body, options));
-        }, 0);
-      };
-
-      xhr.onerror = function() {
-        setTimeout(function() {
-          reject(new TypeError('Network request failed'));
-        }, 0);
-      };
-
-      xhr.ontimeout = function() {
-        setTimeout(function() {
-          reject(new TypeError('Network request failed'));
-        }, 0);
-      };
-
-      xhr.onabort = function() {
-        setTimeout(function() {
-          reject(new exports.DOMException('Aborted', 'AbortError'));
-        }, 0);
-      };
-
-      function fixUrl(url) {
-        try {
-          return url === '' && global.location.href ? global.location.href : url
-        } catch (e) {
-          return url
-        }
-      }
-
-      xhr.open(request.method, fixUrl(request.url), true);
-
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true;
-      } else if (request.credentials === 'omit') {
-        xhr.withCredentials = false;
-      }
-
-      if ('responseType' in xhr) {
-        if (support.blob) {
-          xhr.responseType = 'blob';
-        } else if (
-          support.arrayBuffer &&
-          request.headers.get('Content-Type') &&
-          request.headers.get('Content-Type').indexOf('application/octet-stream') !== -1
-        ) {
-          xhr.responseType = 'arraybuffer';
-        }
-      }
-
-      if (init && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
-        Object.getOwnPropertyNames(init.headers).forEach(function(name) {
-          xhr.setRequestHeader(name, normalizeValue(init.headers[name]));
-        });
-      } else {
-        request.headers.forEach(function(value, name) {
-          xhr.setRequestHeader(name, value);
-        });
-      }
-
-      if (request.signal) {
-        request.signal.addEventListener('abort', abortXhr);
-
-        xhr.onreadystatechange = function() {
-          // DONE (success or failure)
-          if (xhr.readyState === 4) {
-            request.signal.removeEventListener('abort', abortXhr);
-          }
-        };
-      }
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
-    })
-  }
-
-  fetch.polyfill = true;
-
-  if (!global.fetch) {
-    global.fetch = fetch;
-    global.Headers = Headers;
-    global.Request = Request;
-    global.Response = Response;
-  }
-
-  exports.Headers = Headers;
-  exports.Request = Request;
-  exports.Response = Response;
-  exports.fetch = fetch;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-},{}],"citation-js":[function(require,module,exports){
+},{"base64-js":60,"buffer":61,"ieee754":63}],"citation-js":[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8908,29 +8633,16 @@ Object.defineProperty(exports, "logger", {
   }
 });
 exports.version = exports.util = exports.plugins = void 0;
-
 var _index = _interopRequireDefault(require("./Cite/index.js"));
-
 var plugins = _interopRequireWildcard(require("./plugins/index.js"));
-
 exports.plugins = plugins;
-
 var util = _interopRequireWildcard(require("./util/index.js"));
-
 exports.util = util;
-
 var _logger = _interopRequireDefault(require("./logger.js"));
-
 var _package = _interopRequireDefault(require("../package.json"));
-
 require("./plugin-common/index.js");
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const version = _package.default.version;
-exports.version = version;
-},{"../package.json":42,"./Cite/index.js":3,"./logger.js":10,"./plugin-common/index.js":11,"./plugins/index.js":23,"./util/index.js":38}]},{},[51,55,58]);
+const version = exports.version = _package.default.version;
+},{"../package.json":42,"./Cite/index.js":3,"./logger.js":10,"./plugin-common/index.js":11,"./plugins/index.js":22,"./util/index.js":38}]},{},[51,55,58]);
