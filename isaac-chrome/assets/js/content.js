@@ -35,6 +35,7 @@ const radioMap = {
 const authorFieldMap = {
     Volgnummer: (data, i) => i + 1,
     // DAI: data => {},
+    ORCID: data => data['_orcid'] ? data['_orcid'].replace(/^(https?:\/\/)?orcid\.org\//, '') : '',
     Titulatuur: data => data['dropping-particle'] || '',
     Voornaam: data => data['given'].includes('.') ? '' : data['given'] || '',
     Voorletters: data => data['given'].includes('.') ? data['given'] : data['given'].replace(/([^\W])[^\W]*/g, '$1.'),
