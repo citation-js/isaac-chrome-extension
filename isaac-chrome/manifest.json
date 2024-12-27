@@ -1,7 +1,7 @@
 {
   "name": "ISAAC Chrome extension",
   "description": "A browser extension to add literature using DOIs and PubMed identifiers.",
-  "version": "1.5",
+  "version": "1.6",
   "manifest_version": 3,
   "icons": {
     "16": "assets/img/icon-16.png",
