@@ -66,7 +66,7 @@ const typeMap = {
 const openAccessMap = {
     green: 1,
     gold: 2,
-    hybrid: 4
+    hybrid: 3
     // bronze: not supported
 }
 
