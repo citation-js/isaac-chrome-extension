@@ -12,3 +12,17 @@ version: v1.6.0
 doi: 10.5281/zenodo.6350382
 date-released: 2024-12-27
 url: "https://github.com/citation-js/isaac-chrome-extension"
+preferred-citation:
+  authors:
+    - family-names: Willighagen
+      given-names: Egon
+      orcid: https://orcid.org/0000-0001-7542-0286
+    - family-names: Willighagen
+      given-names: Lars
+      orcid: https://orcid.org/0000-0002-4751-4637
+  doi: 10.59350/1cg8w-qth68
+  title: ISAAC Chrome Extension
+  journal: chem-bla-ics
+  url: http://dx.doi.org/10.59350/1cg8w-qth68
+  date-published: 2025-01-04
+  type: blog
